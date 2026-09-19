@@ -6,7 +6,9 @@
 
 > Li H, Peralta AG, Schoffelen S, et al. **LeGenD: determining N-glycoprofiles using an explainable AI-leveraged model with lectin profiling.** *bioRxiv* (2024). [PMC10996628](https://pmc.ncbi.nlm.nih.gov/articles/PMC10996628/)
 
-線上使用（GitHub Pages）：發布後見本 repo 的 Pages 網址。
+線上使用：[https://hunglinchen2003.github.io/lectin-glycan-profiler/](https://hunglinchen2003.github.io/lectin-glycan-profiler/)
+
+原始碼：[https://github.com/hunglinchen2003/lectin-glycan-profiler](https://github.com/hunglinchen2003/lectin-glycan-profiler)
 
 ## 這頁做什麼
 
