@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeGenD Glycan Profiler｜Lectin 資料重建 N-Glycan 剖面</title>
+  <meta name="description" content="依 Li et al. LeGenD（PMC10996628）方法，由 lectin array / ELLA / FACS 資料重建 N-glycan profile 的教學網頁。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1c2430;
+      --muted: #5b6573;
+      --paper: #f4efe6;
+      --card: #fffdf8;
+      --line: #d9cfc0;
+      --navy: #143a5c;
+      --glcnac: #0054a6;
+      --man: #00a651;
+      --gal: #e6b800;
+      --fuc: #ed1c24;
+      --sia: #a54399;
+      --shadow: 0 14px 40px rgba(20, 40, 60, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 420px at 8% -10%, rgba(0, 84, 166, 0.08), transparent 60%),
+        radial-gradient(700px 380px at 100% 0%, rgba(165, 67, 153, 0.08), transparent 55%),
+        var(--paper);
+      font-family: "Noto Sans TC", sans-serif;
+      line-height: 1.65;
+    }
+    a { color: var(--glcnac); }
+    header.hero {
+      padding: 28px 20px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0%, #f7f3ec 100%);
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    .kicker {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+    }
+    .dot {
+      width: 12px; height: 12px; display: inline-block; vertical-align: -1px; margin-right: 4px;
+    }
+    .sq { width: 12px; height: 12px; }
+    .tri {
+      width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent;
+      border-bottom: 12px solid var(--fuc); display: inline-block; vertical-align: -1px; margin-right: 4px;
+    }
+    .dia {
+      width: 10px; height: 10px; background: var(--sia); transform: rotate(45deg);
+      display: inline-block; vertical-align: 0; margin: 0 6px 0 2px;
+    }
+    h1 {
+      font-family: "Source Serif 4", serif;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.2; margin: 12px 0 8px; color: var(--navy);
+    }
+    .lead { font-size: 17px; max-width: 820px; color: #334155; }
+    nav.toc {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px;
+    }
+    nav.toc a {
+      text-decoration: none; background: #fff; border: 1px solid var(--line);
+      color: var(--navy); padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    }
+    nav.toc a:hover { border-color: var(--glcnac); }
+    main { padding: 28px 20px 80px; }
+    section { margin: 0 0 28px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 22px; box-shadow: var(--shadow);
+    }
+    h2 {
+      font-family: "Source Serif 4", serif; color: var(--navy);
+      margin: 0 0 12px; font-size: 28px;
+    }
+    h3 { margin: 18px 0 8px; color: var(--navy); font-size: 18px; }
+    .grid-2 { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .step {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 12px 14px;
+      min-height: 150px;
+    }
+    .n {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--navy); color: #fff;
+      display: grid; place-items: center; font-weight: 800; font-size: 13px; margin-bottom: 8px;
+    }
+    .step h4 { margin: 0 0 6px; font-size: 14px; }
+    .step p { margin: 0; font-size: 13px; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px 8px; text-align: left; vertical-align: top; }
+    th { font-size: 12px; letter-spacing: 0.04em; color: var(--muted); font-weight: 700; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin: 10px 0 14px; }
+    label.field { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--muted); }
+    select, input, textarea, button {
+      font-family: inherit; font-size: 14px;
+    }
+    select, input[type="number"], input[type="text"] {
+      border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #fff; min-width: 180px;
+    }
+    textarea {
+      width: 100%; min-height: 150px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+      font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: #fff;
+    }
+    button {
+      border: 0; border-radius: 999px; padding: 9px 14px; font-weight: 800; cursor: pointer;
+    }
+    .btn { background: var(--navy); color: #fff; }
+    .btn.alt { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+    .btn.good { background: var(--man); color: #072; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line);
+      background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; margin: 0 6px 6px 0;
+    }
+    .note {
+      background: #eef5fb; border: 1px solid #c9dcea; border-radius: 12px; padding: 12px 14px;
+      font-size: 13.5px; color: #234;
+    }
+    .warn {
+      background: #fff6e8; border: 1px solid #edd7a8; border-radius: 12px; padding: 12px 14px;
+      font-size: 13.5px;
+    }
+    .bars { display: grid; gap: 7px; }
+    .bar-row { display: grid; grid-template-columns: 168px 1fr 58px; gap: 8px; align-items: center; font-size: 12.5px; }
+    .track { height: 12px; background: #efe8dc; border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--glcnac), var(--sia)); }
+    .mono { font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+    .svgbox { background: #fff; border: 1px dashed var(--line); border-radius: 12px; padding: 8px; overflow: auto; }
+    footer {
+      padding: 24px 20px 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line);
+    }
+    .lectin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .lectin-card {
+      border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; cursor: pointer;
+    }
+    .lectin-card.active { outline: 2px solid var(--glcnac); }
+    .lectin-card b { display: block; color: var(--navy); }
+    .lectin-card span { font-size: 12px; color: var(--muted); }
+    .input-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .in {
+      border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #fff;
+    }
+    .in label { display: block; font-size: 11px; font-weight: 800; color: var(--muted); }
+    .in input { width: 100%; border: 0; padding: 4px 0; outline: none; min-width: 0; font-size: 16px; font-weight: 700; }
+    .feat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .feat .box { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+    .feat .v { font-size: 22px; font-weight: 900; color: var(--navy); }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 980px) {
+      .grid-2, .split, .steps, .grid-3, .lectin-grid, .input-grid, .feat { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="kicker">
+        <span class="sq" style="background:var(--glcnac)"></span>GlcNAc
+        <span class="dot" style="border-radius:50%;background:var(--man)"></span>Man
+        <span class="dot" style="border-radius:50%;background:var(--gal)"></span>Gal
+        <span class="tri"></span>Fuc
+        <span class="dia"></span>Neu5Ac
+        <span>SNFG 符號｜教學重建工具</span>
+      </div>
+      <h1>LeGenD Glycan Profiler</h1>
+      <p class="lead">
+        讀取 Li 等人 <em>LeGenD</em> 文獻（PMC10996628）：以 8 種 lectin 的結合訊號，重建純化蛋白質上的
+        N-glycan 相對豐度。本頁把文獻中的技術、資料庫建立方式與 lectin–醣結構對應做成可操作的單檔工具，
+        可輸入 lectin microarray、ELLA/ELISA 或 FACS 數據。
+      </p>
+      <nav class="toc">
+        <a href="#method">技術原理</a>
+        <a href="#database">資料庫如何建立</a>
+        <a href="#lectins">Lectin 與醣結構</a>
+        <a href="#app">輸入資料並重建剖面</a>
+        <a href="#examples">示範樣本</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="method" class="card">
+      <h2>技術原理：為什麼 lectin 不能直接等於完整 glycoprofile</h2>
+      <p>
+        Lectin 只辨識 <strong>epitope（局部醣結構特徵）</strong>，例如核心岩藻糖、α2,6-唾液酸化 LacNAc、雙分枝或 bisecting GlcNAc。
+        文獻 Figure 1 用 2,912 組隨機 glycoprofile 模擬 lectin 訊號，發現 Pearson R &gt; 0.95 的 lectin profile 可以對應至少七群完全不同的 N-glycan 組成。
+        也就是說：相同的 lectin 圖案，理論上對應無限多種完整結構組合。
+      </p>
+      <p>
+        LeGenD（<strong>Le</strong>ctin to <strong>G</strong>lycoprofile <strong>EN</strong>hanced with <strong>D</strong>ata-driven methods）的解法不是再多測幾種 lectin，
+        而是把「細胞實際會做出來的 glycoprofile 約束」學進模型。CHO 細胞的酵素庫、單糖供應與蛋白質立體障礙會大幅縮小可能結構空間，
+        因此可用類神經網路把 8 維 lectin 向量映射到 68 種 N-glycan 的相對豐度。
+      </p>
+      <div class="grid-3">
+        <div>
+          <h3>Lectin array</h3>
+          <p>把多種 lectin 固定在晶片上，以螢光標定的醣蛋白或細胞溶菌液結合，得到高通量 RFU 圖譜。文獻指出此格式也可套用 LeGenD，但需獨立訓練集。</p>
+        </div>
+        <div>
+          <h3>ELLA / ELISA</h3>
+          <p>文獻主實驗是 enzyme-linked lectin assay：蛋白質包覆 96 孔盤，加 biotin-lectin → ABC-HRP → TMB，450 nm 讀值。訊號扣背景後正規化為總和 = 1。</p>
+        </div>
+        <div>
+          <h3>FACS</h3>
+          <p>螢光 lectin 標記細胞表面醣衣，以 MFI 作為結合強度。原理與 ELLA 相同（相對 lectin 向量），但細胞表面還有 O-glycan 與糖脂，解釋時需更謹慎。</p>
+        </div>
+      </div>
+      <p class="note">
+        原始模型：8 個 lectin 輸入 → 4 層全連接隱藏層（每層 20 節點）→ softmax 輸出 68 種 N-glycan 豐度。
+        最佳驗證 RMSE 約 3.60×10<sup>−2</sup>。解讀用 SHAP；IgG 上 LCA 與 MAL-I 貢獻最大。
+        本教學頁無法重現作者未公開的權重，因此以文獻 Equation 1–2 的「醣特徵矩陣 × 結合規則矩陣」做可解釋重建，並採用論文相同的 0.02 閾值去噪。
+      </p>
+    </section>
+
+    <section id="database" class="card">
+      <h2>資料庫如何依據這篇文獻建立</h2>
+      <p>
+        文獻面對的核心困難是：幾乎沒有「同一批樣本同時有完整 UPLC glycoprofile + 實驗 lectin profile」的公開大數據。
+        作者因此用 <strong>實驗 glycoprofile 當真相、以結合規則模擬 lectin 訊號當訓練輸入</strong>，再用 IgG 與 Fetuin B 的真實 ELLA 校正。
+      </p>
+      <div class="steps">
+        <article class="step"><div class="n">1</div><h4>實驗 glycoprofile</h4><p>30 株 glycoengineered CHO（17 個 glycosyltransferase 敲除/嵌入組合）表現 10 種重組蛋白，HILIC-UPLC 得到 309 張 N-glycan 剖面、68 種結構。</p></article>
+        <article class="step"><div class="n">2</div><h4>特徵分解</h4><p>每個 glycan 依 LinearCode 拆成特徵計數：核心 Fuc、末端 Manα1,2、α2,3/α2,6 Sia、bisecting GlcNAc、β1,6 分枝、末端 type-2 LacNAc 等。</p></article>
+        <article class="step"><div class="n">3</div><h4>結合規則</h4><p>8 種 lectin 對 10 類 N-glycan 特徵的專一性取自 Bojar et al. 2022（57 種 lectin 的機器學習註解）。p 值轉 z-score，構成結合規則矩陣（Table S3）。</p></article>
+        <article class="step"><div class="n">4</div><h4>模擬 lectin profile</h4><p>LP = GP ×（特徵矩陣 × 結合規則）。再用 IgG / Fetuin B 的實驗 ELLA 做線性迴歸校正。IgG RMSE = 2.63×10<sup>−3</sup>，Fetuin B = 3.85×10<sup>−3</sup>。</p></article>
+        <article class="step"><div class="n">5</div><h4>訓練與擴充</h4><p>ANN 學習「模擬 lectin → 真實 glycoprofile」。另用 Dirichlet 分布合成 30 張 Fetuin 型剖面（約 10% 訓練集），降低未見結構的假陽性。</p></article>
+      </div>
+      <h3>驗證蛋白質（本頁示範也使用這兩種）</h3>
+      <ul>
+        <li><strong>人類血清 IgG</strong>：以核心岩藻糖化雙分枝為主（G0F / G1F / G2F），少量 bisecting 與 α2,6-唾液酸化。LCA 高、MAL-I 低、PHA-L 低。</li>
+        <li><strong>牛 Fetuin B</strong>：高度唾液酸化的三／四分枝複雜型，幾乎無核心 Fuc。MAL-I、SNA、PHA-L 高，LCA 低。模型無法分辨三唾液酸化與 polysialic acid（SNA / MAL-I 都不辨 α2,8）。</li>
+      </ul>
+      <p>
+        文獻來源：
+        Li H, Peralta AG, Schoffelen S, et al.
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10996628/" target="_blank" rel="noopener">LeGenD: determining N-glycoprofiles using an explainable AI-leveraged model with lectin profiling</a>
+        （bioRxiv 2024；PMC10996628）。結合規則依據
+        <a href="https://pubmed.ncbi.nlm.nih.gov/35084820/" target="_blank" rel="noopener">Bojar et al., ACS Chem. Biol. 2022</a>。
+      </p>
+    </section>
+
+    <section id="lectins" class="card">
+      <h2>下拉選擇已分析的 Lectin，列出對應醣結構</h2>
+      <p>此表對應文獻 Table S1：8 種 lectin 共同覆蓋約 10 類常見 N-glycan 特徵。點選 lectin 卡片或使用下拉選單。</p>
+      <div class="controls">
+        <label class="field">選擇 lectin
+          <select id="lectinSelect"></select>
+        </label>
+      </div>
+      <div id="lectinCards" class="lectin-grid"></div>
+      <div id="lectinDetail" style="margin-top:16px"></div>
+    </section>
+
+    <section id="app" class="card">
+      <h2>輸入 Lectin array / ELISA / FACS 資料，重建 glycan profile</h2>
+      <div class="controls">
+        <label class="field">實驗格式
+          <select id="assayType">
+            <option value="ella">ELLA / ELISA（OD<sub>450</sub>）</option>
+            <option value="array">Lectin microarray（RFU）</option>
+            <option value="facs">FACS（MFI）</option>
+          </select>
+        </label>
+        <label class="field">示範樣本
+          <select id="exampleSelect">
+            <option value="">— 選擇後載入 —</option>
+          </select>
+        </label>
+        <button class="btn" id="runBtn" type="button">重建 N-glycan 剖面</button>
+        <button class="btn alt" id="clearBtn" type="button">清空</button>
+        <button class="btn alt" id="csvBtn" type="button">下載結果 CSV</button>
+      </div>
+      <p class="warn">輸入相對強度即可；程式會扣背景（若提供）並把 lectin 向量正規化為總和 1，與文獻 ELLA 處理一致。未填的 lectin 不參與重建。</p>
+      <div id="inputGrid" class="input-grid"></div>
+      <h3>或貼上 CSV / TSV</h3>
+      <textarea id="pasteBox" placeholder="lectin,signal,background&#10;LCA,0.82,0.04&#10;MAL-I,0.11,0.03&#10;..."></textarea>
+      <p style="font-size:13px;color:var(--muted)">欄位名稱可為 lectin, signal / intensity / MFI / OD / RFU，以及選填 background。</p>
+      <div id="result"></div>
+    </section>
+
+    <section id="examples" class="card">
+      <h2>示範例子（依文獻與常見 N-glycome）</h2>
+      <p>示範 lectin 訊號是用本頁與文獻相同的正向模型，由「文獻式參考 glycoprofile」模擬而來，因此重建結果可對照參考組成。這也重現 LeGenD 用模擬 lectin profile 訓練的邏輯。</p>
+      <div id="exampleCards" class="grid-3"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      教學工具，非正式 LeGenD 權重重現。課程用途：醣免疫與分子生物學。
+      結構符號依 SNFG。原始方法與訓練資料屬於 Li、Lewis、Chiang 等作者；本頁僅依據公開論文方法重建可解釋流程。
+    </div>
+  </footer>
+
+  <script>
+    const FEATURES = [
+      "coreFuc", "termManA12", "sia23", "sia26", "sulfo3Gal",
+      "bisectGlcNAc", "biAntennary", "triAntennary", "tetraAntennary",
+      "b16branch", "termLacNAc", "termGalB14", "termGlcNAc", "polyLacNAc", "sialicAcidAny"
+    ];
+
+    const LECTINS = [
+      {
+        id: "DSL", name: "Datura stramonium lectin", source: "曼陀羅種子",
+        epitopes: ["Chitin / 末端 GlcNAc 寡聚", "Type II poly-LacNAc (Galβ1-4GlcNAc)n"],
+        shap: "輔助偵測延長的 LacNAc 與末端 GlcNAc；IgG 通常訊號偏低。",
+        weights: { polyLacNAc: 2.6, termGlcNAc: 1.4, termLacNAc: 0.9 }
+      },
+      {
+        id: "LCA", name: "Lens culinaris agglutinin", source: "小扁豆",
+        epitopes: ["核心 α1,6-岩藻糖 (core Fuc)", "末端 Manα1,2"],
+        shap: "文獻 SHAP：IgG 與 Fetuin 預測中最重要 lectin 之一（+0.3）。IgG 高、Fetuin 接近背景時反而成為負對照。",
+        weights: { coreFuc: 2.9, termManA12: 1.7 }
+      },
+      {
+        id: "MAL-I", name: "Maackia amurensis lectin I", source: "東北苦木",
+        epitopes: ["Siaα2-3Galβ1-4GlcNAc", "末端 3-O-sulfated Gal on LacNAc"],
+        shap: "SHAP 重要性約 +0.25。Fetuin 高、IgG 低。不辨 α2,8 polysialic acid。",
+        weights: { sia23: 2.7, sulfo3Gal: 1.9, sialicAcidAny: 0.3 }
+      },
+      {
+        id: "PHA-E", name: "Phaseolus vulgaris erythroagglutinin", source: "菜豆",
+        epitopes: ["Bisecting GlcNAc", "雙／三分枝或半乳糖化複雜型"],
+        shap: "對 IgG 有中等貢獻（&lt; +0.2）。內部結構易受立體障礙，SHAP 顯示對完整剖面幫助有限。",
+        weights: { bisectGlcNAc: 2.5, biAntennary: 1.5, triAntennary: 1.1, termGalB14: 0.5 }
+      },
+      {
+        id: "PHA-L", name: "Phaseolus vulgaris leucoagglutinin", source: "菜豆",
+        epitopes: ["β1,6 分枝", "三／四分枝或半乳糖化 N-glycan"],
+        shap: "Fetuin、EPO 類高度分枝樣本會升高；典型血清 IgG 很低。",
+        weights: { b16branch: 2.6, tetraAntennary: 2.3, triAntennary: 1.8, termGalB14: 0.4 }
+      },
+      {
+        id: "RCA-I", name: "Ricinus communis agglutinin I", source: "蓖麻",
+        epitopes: ["末端 type-2 LacNAc", "末端 Galβ1,4"],
+        shap: "唾液酸蓋住末端 Gal 時訊號下降，可與 SNA / MAL-I 互補判斷封端程度。",
+        weights: { termLacNAc: 2.5, termGalB14: 2.3 }
+      },
+      {
+        id: "SNA", name: "Sambucus nigra agglutinin", source: "西洋接骨木",
+        epitopes: ["Neu5Acα2-6Gal/GalNAc"],
+        shap: "Fetuin 重要；IgG 的 Fc 僅少量 α2,6-Sia，文獻提到 SNA 定量變異大（易寡聚）。",
+        weights: { sia26: 2.9, sialicAcidAny: 0.4 }
+      },
+      {
+        id: "WGA", name: "Wheat germ agglutinin", source: "小麥胚芽",
+        epitopes: ["末端 GlcNAc", "唾液酸", "雙分枝與 2,2,6-三分枝"],
+        shap: "專一性較寬，適合作整體複雜型／末端 GlcNAc 指標，單獨解讀需搭配其他 lectin。",
+        weights: { termGlcNAc: 2.1, sialicAcidAny: 1.5, biAntennary: 0.8, triAntennary: 0.7 }
+      }
+    ];
+
+    const GLYCANS = [
+      { id: "M5", oxford: "Man5", linear: "Ma3(Ma6)Ma3(Ma6)Mb4GNb4GN", cls: "高甘露糖",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 0, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "hm", mans: 5 },
+      { id: "M6", oxford: "Man6", linear: "Ma2Ma3(Ma6)Ma3(Ma6)Mb4GNb4GN", cls: "高甘露糖",
+        coreFuc: 0, termManA12: 1, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 0, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "hm", mans: 6 },
+      { id: "M7", oxford: "Man7", linear: "Ma2Ma2Ma3(Ma6)Ma3(Ma6)Mb4GNb4GN", cls: "高甘露糖",
+        coreFuc: 0, termManA12: 2, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 0, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "hm", mans: 7 },
+      { id: "M8", oxford: "Man8", linear: "Ma2Ma2Ma3(Ma2Ma3(Ma6)Ma6)Mb4GNb4GN", cls: "高甘露糖",
+        coreFuc: 0, termManA12: 2, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 0, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "hm", mans: 8 },
+      { id: "M9", oxford: "Man9", linear: "Ma2Ma2Ma3(Ma2Ma3(Ma2Ma6)Ma6)Mb4GNb4GN", cls: "高甘露糖",
+        coreFuc: 0, termManA12: 3, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 0, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "hm", mans: 9 },
+      { id: "A2", oxford: "A2 / G0", linear: "GNb2Ma3(GNb2Ma6)Mb4GNb4GN", cls: "複雜型雙分枝",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 2, poly: 0,
+        layout: "cx", gal: [0, 0], sia: [0, 0], fuc: 0, bisectDraw: 0, arms: 2 },
+      { id: "A2G1", oxford: "A2G1 / G1", linear: "Ab4GNb2Ma3(GNb2Ma6)Mb4GNb4GN", cls: "複雜型雙分枝",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 1, poly: 0,
+        layout: "cx", gal: [1, 0], sia: [0, 0], fuc: 0, bisectDraw: 0, arms: 2 },
+      { id: "A2G2", oxford: "A2G2 / G2", linear: "Ab4GNb2Ma3(Ab4GNb2Ma6)Mb4GNb4GN", cls: "複雜型雙分枝",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 2, termGal: 2, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [0, 0], fuc: 0, bisectDraw: 0, arms: 2 },
+      { id: "FA2", oxford: "FA2 / G0F", linear: "GNb2Ma3(GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "核心岩藻糖雙分枝",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 2, poly: 0,
+        layout: "cx", gal: [0, 0], sia: [0, 0], fuc: 1, bisectDraw: 0, arms: 2 },
+      { id: "FA2G1", oxford: "FA2G1 / G1F", linear: "Ab4GNb2Ma3(GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "核心岩藻糖雙分枝",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 1, poly: 0,
+        layout: "cx", gal: [1, 0], sia: [0, 0], fuc: 1, bisectDraw: 0, arms: 2 },
+      { id: "FA2G2", oxford: "FA2G2 / G2F", linear: "Ab4GNb2Ma3(Ab4GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "核心岩藻糖雙分枝",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 2, termGal: 2, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [0, 0], fuc: 1, bisectDraw: 0, arms: 2 },
+      { id: "FA2B", oxford: "FA2B / G0FB", linear: "GNb2Ma3(GNb4)(GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "Bisecting",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 1, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 3, poly: 0,
+        layout: "cx", gal: [0, 0], sia: [0, 0], fuc: 1, bisectDraw: 1, arms: 2 },
+      { id: "FA2BG1", oxford: "FA2BG1", linear: "Ab4GNb2Ma3(GNb4)(GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "Bisecting",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 1, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 2, poly: 0,
+        layout: "cx", gal: [1, 0], sia: [0, 0], fuc: 1, bisectDraw: 1, arms: 2 },
+      { id: "FA2BG2", oxford: "FA2BG2", linear: "Ab4GNb2Ma3(GNb4)(Ab4GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "Bisecting",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 1, antenna: 2, b16: 0, termLacNAc: 2, termGal: 2, termGlcNAc: 1, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [0, 0], fuc: 1, bisectDraw: 1, arms: 2 },
+      { id: "FA2G2S1", oxford: "FA2G2S1", linear: "Na6Ab4GNb2Ma3(Ab4GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "α2,6-唾液酸化 IgG 型",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 1, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [6, 0], fuc: 1, bisectDraw: 0, arms: 2 },
+      { id: "FA2G2S2", oxford: "FA2G2S2", linear: "Na6Ab4GNb2Ma3(Na6Ab4GNb2Ma6)Mb4GNb4(Fa6)GN", cls: "α2,6-唾液酸化 IgG 型",
+        coreFuc: 1, termManA12: 0, sia23: 0, sia26: 2, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [6, 6], fuc: 1, bisectDraw: 0, arms: 2 },
+      { id: "A2G2S2a26", oxford: "A2G2S2 (α2,6)", linear: "Na6Ab4GNb2Ma3(Na6Ab4GNb2Ma6)Mb4GNb4GN", cls: "雙分枝雙唾液酸化",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 2, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [6, 6], fuc: 0, bisectDraw: 0, arms: 2 },
+      { id: "A2G2S2a23", oxford: "A2G2S2 (α2,3)", linear: "Na3Ab4GNb2Ma3(Na3Ab4GNb2Ma6)Mb4GNb4GN", cls: "雙分枝雙唾液酸化",
+        coreFuc: 0, termManA12: 0, sia23: 2, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1], sia: [3, 3], fuc: 0, bisectDraw: 0, arms: 2 },
+      { id: "A3G3", oxford: "A3G3", linear: "Ab4GNb2Ma3(Ab4GNb2(Ab4GNb6)Ma6)Mb4GNb4GN", cls: "三分枝",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 3, b16: 1, termLacNAc: 3, termGal: 3, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1, 1], sia: [0, 0, 0], fuc: 0, bisectDraw: 0, arms: 3 },
+      { id: "A3G3S3a23", oxford: "A3G3S3 (α2,3)", linear: "Na3Ab4GNb2Ma3(Na3Ab4GNb2(Na3Ab4GNb6)Ma6)Mb4GNb4GN", cls: "Fetuin 型三分枝",
+        coreFuc: 0, termManA12: 0, sia23: 3, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 3, b16: 1, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1, 1], sia: [3, 3, 3], fuc: 0, bisectDraw: 0, arms: 3 },
+      { id: "A3G3S3a26", oxford: "A3G3S3 (α2,6)", linear: "Na6Ab4GNb2Ma3(Na6Ab4GNb2(Na6Ab4GNb6)Ma6)Mb4GNb4GN", cls: "Fetuin 型三分枝",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 3, sulfo3Gal: 0, bisect: 0, antenna: 3, b16: 1, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1, 1], sia: [6, 6, 6], fuc: 0, bisectDraw: 0, arms: 3 },
+      { id: "A3G3S3mix", oxford: "A3G3S3 (mixed)", linear: "Na3/Na6 mixed triantennary", cls: "Fetuin 型三分枝",
+        coreFuc: 0, termManA12: 0, sia23: 2, sia26: 1, sulfo3Gal: 0, bisect: 0, antenna: 3, b16: 1, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1, 1], sia: [3, 3, 6], fuc: 0, bisectDraw: 0, arms: 3 },
+      { id: "A4G4", oxford: "A4G4", linear: "Ab4GNb2(Ab4GNb4)Ma3(Ab4GNb2(Ab4GNb6)Ma6)Mb4GNb4GN", cls: "四分枝",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 4, b16: 1, termLacNAc: 4, termGal: 4, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1, 1, 1], sia: [0, 0, 0, 0], fuc: 0, bisectDraw: 0, arms: 4 },
+      { id: "A4G4S4", oxford: "A4G4S4", linear: "fully sialylated tetraantennary", cls: "四分枝高度唾液酸化",
+        coreFuc: 0, termManA12: 0, sia23: 2, sia26: 2, sulfo3Gal: 0, bisect: 0, antenna: 4, b16: 1, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0,
+        layout: "cx", gal: [1, 1, 1, 1], sia: [3, 3, 6, 6], fuc: 0, bisectDraw: 0, arms: 4 },
+      { id: "A4G4poly", oxford: "A4G4 + poly-LacNAc", linear: "tetraantennary with poly-LacNAc", cls: "poly-LacNAc",
+        coreFuc: 0, termManA12: 0, sia23: 0, sia26: 0, sulfo3Gal: 0, bisect: 0, antenna: 4, b16: 1, termLacNAc: 2, termGal: 2, termGlcNAc: 0, poly: 2,
+        layout: "cx", gal: [1, 1, 1, 1], sia: [0, 0, 0, 0], fuc: 0, bisectDraw: 0, arms: 4 }
+    ];
+
+    const EXAMPLES = [
+      {
+        id: "igg",
+        title: "人類血清 IgG（ELLA）",
+        blurb: "文獻主驗證樣本：核心岩藻糖雙分枝為主，LCA 高、MAL-I / PHA-L 低。",
+        assay: "ella",
+        truth: { FA2: 0.18, FA2G1: 0.36, FA2G2: 0.18, FA2B: 0.05, FA2BG1: 0.08, A2: 0.03, A2G1: 0.04, FA2G2S1: 0.06, FA2G2S2: 0.02 }
+      },
+      {
+        id: "fetuin",
+        title: "牛 Fetuin B（ELLA）",
+        blurb: "文獻第二驗證樣本：三／四分枝高度唾液酸化，幾乎無 core Fuc。",
+        assay: "ella",
+        truth: { A3G3S3a23: 0.22, A3G3S3a26: 0.18, A3G3S3mix: 0.20, A4G4S4: 0.16, A2G2S2a26: 0.12, A3G3: 0.07, A4G4: 0.05 }
+      },
+      {
+        id: "hm",
+        title: "高甘露糖型（FACS，如 RNase B / kifunensine）",
+        blurb: "末端 Manα1,2 使 LCA 次專一性上升；RCA / SNA / PHA-L 接近背景。",
+        assay: "facs",
+        truth: { M5: 0.14, M6: 0.20, M7: 0.24, M8: 0.26, M9: 0.16 }
+      },
+      {
+        id: "asialo",
+        title: "去唾液酸化 IgG（lectin array）",
+        blurb: "SNA / MAL-I 下降、RCA-I 上升：末端 Galβ1,4 暴露。",
+        assay: "array",
+        truth: { FA2: 0.12, FA2G1: 0.34, FA2G2: 0.38, FA2B: 0.04, FA2BG2: 0.08, A2G2: 0.04 }
+      },
+      {
+        id: "epo",
+        title: "高度分枝 EPO 樣（ELLA）",
+        blurb: "PHA-L、MAL-I、SNA、DSL 同時升高，類似重組 EPO / 部分腫瘤 N-glycome。",
+        assay: "ella",
+        truth: { A4G4S4: 0.34, A3G3S3mix: 0.22, A4G4poly: 0.16, A3G3S3a23: 0.14, A4G4: 0.08, A3G3: 0.06 }
+      }
+    ];
+
+    function featVec(g) {
+      return {
+        coreFuc: g.coreFuc, termManA12: g.termManA12, sia23: g.sia23, sia26: g.sia26,
+        sulfo3Gal: g.sulfo3Gal, bisectGlcNAc: g.bisect, biAntennary: g.antenna === 2 ? 1 : 0,
+        triAntennary: g.antenna === 3 ? 1 : 0, tetraAntennary: g.antenna === 4 ? 1 : 0,
+        b16branch: g.b16, termLacNAc: g.termLacNAc, termGalB14: g.termGal,
+        termGlcNAc: g.termGlcNAc, polyLacNAc: g.poly, sialicAcidAny: g.sia23 + g.sia26
+      };
+    }
+
+    function rawLectinScores(g) {
+      const f = featVec(g);
+      const out = {};
+      LECTINS.forEach(L => {
+        let s = 0;
+        Object.entries(L.weights).forEach(([k, w]) => { s += (f[k] || 0) * w; });
+        out[L.id] = s;
+      });
+      return out;
+    }
+
+    function fingerprint(g) {
+      const raw = rawLectinScores(g);
+      const sum = Object.values(raw).reduce((a, b) => a + b, 0) || 1;
+      const fp = {};
+      Object.keys(raw).forEach(k => { fp[k] = raw[k] / sum; });
+      return fp;
+    }
+
+    function simulateFromTruth(truth) {
+      const acc = {};
+      LECTINS.forEach(L => acc[L.id] = 0);
+      let tot = 0;
+      Object.entries(truth).forEach(([gid, ab]) => {
+        const g = GLYCANS.find(x => x.id === gid);
+        if (!g) return;
+        const raw = rawLectinScores(g);
+        LECTINS.forEach(L => { acc[L.id] += ab * raw[L.id]; });
+        tot += ab;
+      });
+      const sum = Object.values(acc).reduce((a, b) => a + b, 0) || 1;
+      const sig = {};
+      LECTINS.forEach(L => { sig[L.id] = acc[L.id] / sum; });
+      return sig;
+    }
+
+    function sugar(type, x, y, r = 7) {
+      const map = {
+        GlcNAc: { s: "sq", f: "#0054A6" },
+        Man: { s: "c", f: "#00A651" },
+        Gal: { s: "c", f: "#FFD400" },
+        Fuc: { s: "t", f: "#ED1C24" },
+        Neu5Ac: { s: "d", f: "#A54399" }
+      };
+      const m = map[type];
+      if (m.s === "c") return `<circle cx="${x}" cy="${y}" r="${r}" fill="${m.f}" stroke="#1c2430" stroke-width="1"/>`;
+      if (m.s === "sq") return `<rect x="${x - r}" y="${y - r}" width="${r * 2}" height="${r * 2}" fill="${m.f}" stroke="#1c2430" stroke-width="1"/>`;
+      if (m.s === "t") return `<polygon points="${x},${y - r} ${x - r},${y + r} ${x + r},${y + r}" fill="${m.f}" stroke="#1c2430" stroke-width="1"/>`;
+      return `<polygon points="${x},${y - r} ${x + r},${y} ${x},${y + r} ${x - r},${y}" fill="${m.f}" stroke="#1c2430" stroke-width="1"/>`;
+    }
+
+    function bond(x1, y1, x2, y2) {
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#334155" stroke-width="1.6"/>`;
+    }
+
+    function drawGlycan(g) {
+      const parts = [];
+      const W = 280, H = 118;
+      if (g.layout === "hm") {
+        const core = [[250, 60], [228, 60], [206, 60]];
+        parts.push(bond(250, 60, 228, 60), bond(228, 60, 206, 60));
+        parts.push(sugar("GlcNAc", 250, 60), sugar("GlcNAc", 228, 60), sugar("Man", 206, 60));
+        parts.push(bond(206, 60, 184, 38), bond(206, 60, 184, 82));
+        parts.push(sugar("Man", 184, 38), sugar("Man", 184, 82));
+        parts.push(bond(184, 38, 162, 26), bond(184, 38, 162, 50));
+        parts.push(sugar("Man", 162, 26), sugar("Man", 162, 50));
+        parts.push(bond(184, 82, 162, 82));
+        parts.push(sugar("Man", 162, 82));
+        if (g.mans >= 6) { parts.push(bond(162, 26, 140, 26), sugar("Man", 140, 26)); }
+        if (g.mans >= 7) { parts.push(bond(162, 50, 140, 50), sugar("Man", 140, 50)); }
+        if (g.mans >= 8) { parts.push(bond(162, 82, 140, 82), sugar("Man", 140, 82)); }
+        if (g.mans >= 9) { parts.push(bond(140, 50, 118, 50), sugar("Man", 118, 50)); }
+      } else {
+        const gn2 = [248, 60], gn1 = [226, 60], bman = [204, 60];
+        parts.push(bond(248, 60, 226, 60), bond(226, 60, 204, 60));
+        parts.push(sugar("GlcNAc", ...gn2), sugar("GlcNAc", ...gn1), sugar("Man", ...bman));
+        if (g.fuc) {
+          parts.push(bond(248, 60, 248, 36), sugar("Fuc", 248, 36));
+        }
+        const armY = g.arms === 2 ? [38, 82] : g.arms === 3 ? [28, 60, 92] : [20, 44, 76, 100];
+        const manX = 182, gnX = 158, galX = 134, siaX = 110;
+        armY.forEach((y, i) => {
+          parts.push(bond(204, 60, manX, y));
+          parts.push(sugar("Man", manX, y));
+          parts.push(bond(manX, y, gnX, y), sugar("GlcNAc", gnX, y));
+          if (g.gal[i]) {
+            parts.push(bond(gnX, y, galX, y), sugar("Gal", galX, y));
+            if (g.sia[i]) parts.push(bond(galX, y, siaX, y), sugar("Neu5Ac", siaX, y));
+          }
+        });
+        if (g.bisectDraw) {
+          parts.push(bond(204, 60, 204, 86), sugar("GlcNAc", 204, 86, 6));
+        }
+      }
+      return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" xmlns="http://www.w3.org/2000/svg">${parts.join("")}</svg>`;
+    }
+
+    function glycansForLectin(id) {
+      const L = LECTINS.find(x => x.id === id);
+      return GLYCANS.map(g => {
+        const raw = rawLectinScores(g)[id];
+        return { g, score: raw };
+      }).filter(x => x.score > 0.15).sort((a, b) => b.score - a.score);
+    }
+
+    function renderLectin(id) {
+      const L = LECTINS.find(x => x.id === id);
+      const rows = glycansForLectin(id);
+      document.getElementById("lectinSelect").value = id;
+      document.querySelectorAll(".lectin-card").forEach(el => el.classList.toggle("active", el.dataset.id === id));
+      document.getElementById("lectinDetail").innerHTML = `
+        <h3>${L.id}　${L.name}</h3>
+        <p>來源：${L.source}。文獻 Table S1 偏好 epitope：${L.epitopes.join("；")}。</p>
+        <p class="note">${L.shap}</p>
+        <div class="svgbox" style="margin:10px 0 14px">
+          <table>
+            <thead><tr><th>SNFG 示意</th><th>結構</th><th>Oxford / 常用名</th><th>LinearCode</th><th>類別</th><th>規則分數</th></tr></thead>
+            <tbody>
+              ${rows.map(r => `<tr>
+                <td style="width:220px">${drawGlycan(r.g)}</td>
+                <td class="mono">${r.g.id}</td>
+                <td>${r.g.oxford}</td>
+                <td class="mono">${r.g.linear}</td>
+                <td>${r.g.cls}</td>
+                <td>${r.score.toFixed(2)}</td>
+              </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function nnls(W, y, l1) {
+      const m = W.length, n = W[0].length;
+      let a = Array(n).fill(1 / n);
+      const lr = 0.1;
+      const pen = l1 == null ? 0 : l1;
+      for (let t = 0; t < 1400; t++) {
+        const pred = Array(m).fill(0);
+        for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) pred[i] += W[i][j] * a[j];
+        const r = pred.map((p, i) => p - y[i]);
+        const g = Array(n).fill(0);
+        for (let j = 0; j < n; j++) {
+          for (let i = 0; i < m; i++) g[j] += W[i][j] * r[i];
+          g[j] += pen;
+        }
+        for (let j = 0; j < n; j++) a[j] = Math.max(0, a[j] - lr * g[j]);
+        const s = a.reduce((x, z) => x + z, 0) || 1;
+        for (let j = 0; j < n; j++) a[j] /= s;
+      }
+      return a;
+    }
+
+    function cosine(a, b) {
+      let dp = 0, na = 0, nb = 0;
+      for (let i = 0; i < a.length; i++) { dp += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i]; }
+      return dp / ((Math.sqrt(na) || 1) * (Math.sqrt(nb) || 1));
+    }
+
+    function residual(W, a, y) {
+      return y.map((yi, i) => yi - a.reduce((s, aj, j) => s + W[i][j] * aj, 0));
+    }
+
+    function sparseDecode(W, y) {
+      const n = W[0].length, m = W.length;
+      const chosen = [];
+      const aFull = Array(n).fill(0);
+      for (let t = 0; t < 6; t++) {
+        const r = chosen.length ? residual(W.map(row => chosen.map(j => row[j])), chosen.map(j => aFull[j]), y) : y.slice();
+        let best = -1, bestC = t === 0 ? 0.05 : 0.18;
+        for (let j = 0; j < n; j++) {
+          if (chosen.includes(j)) continue;
+          const c = cosine(W.map(row => row[j]), r);
+          if (c > bestC) { bestC = c; best = j; }
+        }
+        if (best < 0) break;
+        chosen.push(best);
+        const Ws = W.map(row => chosen.map(j => row[j]));
+        const aS = nnls(Ws, y, 0);
+        chosen.forEach((j, k) => { aFull[j] = aS[k]; });
+        const r2 = residual(Ws, aS, y);
+        const rel = Math.sqrt(r2.reduce((s, x) => s + x * x, 0)) / (Math.sqrt(y.reduce((s, x) => s + x * x, 0)) || 1);
+        if (rel < 0.04 && chosen.length >= 4) break;
+      }
+      return aFull;
+    }
+
+    function parsePaste(text) {
+      const out = {};
+      text.split(/\r?\n/).forEach(line => {
+        if (!line.trim() || /lectin/i.test(line) && /signal|intensity|mfi|od|rfu/i.test(line)) return;
+        const p = line.split(/[, \t;]+/).map(s => s.trim()).filter(Boolean);
+        if (p.length < 2) return;
+        const name = p[0].toUpperCase().replace("MALI", "MAL-I").replace("MAL_I", "MAL-I").replace("RCAI", "RCA-I").replace("PHAE", "PHA-E").replace("PHAL", "PHA-L");
+        const L = LECTINS.find(x => x.id.toUpperCase() === name || x.id.replace("-", "") === name.replace("-", ""));
+        if (!L) return;
+        const sig = Number(p[1]);
+        const bg = p.length > 2 ? Number(p[2]) : 0;
+        if (!Number.isFinite(sig)) return;
+        out[L.id] = Math.max(0, sig - (Number.isFinite(bg) ? bg : 0));
+      });
+      return out;
+    }
+
+    function collectInputs() {
+      const pasted = parsePaste(document.getElementById("pasteBox").value);
+      const manual = {};
+      LECTINS.forEach(L => {
+        const v = Number(document.getElementById("in-" + L.id).value);
+        const b = Number(document.getElementById("bg-" + L.id).value || 0);
+        if (Number.isFinite(v) && String(document.getElementById("in-" + L.id).value).trim() !== "") {
+          manual[L.id] = Math.max(0, v - (Number.isFinite(b) ? b : 0));
+        }
+      });
+      return Object.keys(pasted).length ? { ...manual, ...pasted } : manual;
+    }
+
+    function setInputs(sig, assay) {
+      if (assay) document.getElementById("assayType").value = assay;
+      LECTINS.forEach(L => {
+        document.getElementById("in-" + L.id).value = sig[L.id] != null ? Number(sig[L.id].toFixed(4)) : "";
+        document.getElementById("bg-" + L.id).value = "";
+      });
+      const lines = ["lectin,signal,background"];
+      LECTINS.forEach(L => {
+        if (sig[L.id] != null) lines.push(`${L.id},${sig[L.id].toFixed(4)},0`);
+      });
+      document.getElementById("pasteBox").value = lines.join("\n");
+    }
+
+    function reconstruct(signal) {
+      const ids = Object.keys(signal).filter(k => Number.isFinite(signal[k]));
+      const lect = LECTINS.filter(L => ids.includes(L.id));
+      if (lect.length < 3) return { error: "請至少提供 3 種 lectin 的數值。文獻 Figure 1 顯示 lectin 維度不足時，同一圖譜可對應多種完全不同的 glycoprofile。" };
+      const ysum = lect.reduce((s, L) => s + signal[L.id], 0) || 1;
+      const y = lect.map(L => signal[L.id] / ysum);
+      const W = lect.map(L => GLYCANS.map(g => fingerprint(g)[L.id]));
+      let a = sparseDecode(W, y);
+      a = a.map(v => v < 0.02 ? 0 : v);
+      const s = a.reduce((x, z) => x + z, 0) || 1;
+      a = a.map(v => v / s);
+      const profile = GLYCANS.map((g, i) => ({ g, ab: a[i] })).filter(x => x.ab > 0).sort((p, q) => q.ab - p.ab);
+      const f = { fuc: 0, sia23: 0, sia26: 0, branch: 0, bisect: 0, gal: 0, hm: 0, poly: 0 };
+      profile.forEach(({ g, ab }) => {
+        f.fuc += ab * g.coreFuc;
+        f.sia23 += ab * (g.sia23 ? 1 : 0);
+        f.sia26 += ab * (g.sia26 ? 1 : 0);
+        f.branch += ab * (g.antenna >= 3 ? 1 : 0);
+        f.bisect += ab * g.bisect;
+        f.gal += ab * (g.termGal > 0 ? 1 : 0);
+        f.hm += ab * (g.layout === "hm" ? 1 : 0);
+        f.poly += ab * (g.poly > 0 ? 1 : 0);
+      });
+      const support = profile.slice(0, 8).map(p => {
+        const fp = fingerprint(p.g);
+        const contrib = lect.map(L => ({
+          id: L.id,
+          v: (signal[L.id] / ysum) * fp[L.id]
+        })).sort((a, b) => b.v - a.v);
+        return { ...p, contrib };
+      });
+      const yMap = {};
+      lect.forEach((L, i) => { yMap[L.id] = y[i]; });
+      const lectFeat = {
+        LCA: yMap["LCA"] || 0,
+        "MAL-I": yMap["MAL-I"] || 0,
+        SNA: yMap["SNA"] || 0,
+        "PHA-L": yMap["PHA-L"] || 0,
+        "PHA-E": yMap["PHA-E"] || 0,
+        "RCA-I": yMap["RCA-I"] || 0,
+        DSL: yMap["DSL"] || 0,
+        WGA: yMap["WGA"] || 0
+      };
+      const candidates = GLYCANS.map((g, i) => ({
+        g,
+        cos: cosine(W.map(row => row[i]), y)
+      })).sort((a, b) => b.cos - a.cos).slice(0, 8);
+      return { y, lect, profile, f, support, nLect: lect.length, lectFeat, candidates };
+    }
+
+    function pct(x) { return (x * 100).toFixed(1) + "%"; }
+
+    function renderResult(res, truth) {
+      const box = document.getElementById("result");
+      if (res.error) { box.innerHTML = `<p class="warn" style="margin-top:14px">${res.error}</p>`; return; }
+      const max = res.profile[0] ? res.profile[0].ab : 1;
+      const assay = document.getElementById("assayType").selectedOptions[0].text;
+      box.innerHTML = `
+        <h3 style="margin-top:18px">重建的 N-glycan profile（${assay}，${res.nLect} 種 lectin）</h3>
+        <p class="note">方法：依文獻 Equation 1–2 計算每種結構的 lectin 指紋；上方四格是 <b>直接由 lectin 正規化強度</b> 得到的 epitope 指標（array / ELLA / FACS 最穩的資訊）。下方稀疏剖面用正交匹配＋非負最小平方，對應論文「真實樣本只有少數主峰」的約束，並以 0.02 閾值去噪。文獻 Figure 1 已說明此反推不是唯一解。</p>
+        <div class="feat" style="margin:12px 0 16px">
+          <div class="box"><div>LCA（core Fuc / Manα1,2）</div><div class="v">${pct(res.lectFeat.LCA)}</div></div>
+          <div class="box"><div>MAL-I（α2,3-Sia）</div><div class="v">${pct(res.lectFeat["MAL-I"])}</div></div>
+          <div class="box"><div>SNA（α2,6-Sia）</div><div class="v">${pct(res.lectFeat.SNA)}</div></div>
+          <div class="box"><div>PHA-L（β1,6 高分枝）</div><div class="v">${pct(res.lectFeat["PHA-L"])}</div></div>
+        </div>
+        <div class="feat" style="margin:0 0 16px">
+          <div class="box"><div>RCA-I（末端 Gal / LacNAc）</div><div class="v">${pct(res.lectFeat["RCA-I"])}</div></div>
+          <div class="box"><div>PHA-E（bisecting / 雙分枝）</div><div class="v">${pct(res.lectFeat["PHA-E"])}</div></div>
+          <div class="box"><div>WGA（GlcNAc / Sia）</div><div class="v">${pct(res.lectFeat.WGA)}</div></div>
+          <div class="box"><div>DSL（poly-LacNAc）</div><div class="v">${pct(res.lectFeat.DSL)}</div></div>
+        </div>
+        <div class="split">
+          <div>
+            <h3>稀疏重建的完整結構（一種可能解）</h3>
+            <div class="bars">
+              ${res.profile.map(p => `
+                <div class="bar-row">
+                  <div><b>${p.g.id}</b><br><span style="color:var(--muted)">${p.g.oxford}</span></div>
+                  <div class="track"><div class="fill" style="width:${(p.ab / max) * 100}%"></div></div>
+                  <div>${pct(p.ab)}</div>
+                </div>`).join("")}
+            </div>
+          </div>
+          <div>
+            <h3>正規化 lectin 向量</h3>
+            <div class="bars">
+              ${res.lect.map((L, i) => `
+                <div class="bar-row">
+                  <div>${L.id}</div>
+                  <div class="track"><div class="fill" style="width:${res.y[i] / Math.max(...res.y) * 100}%;background:linear-gradient(90deg,#00a651,#0054a6)"></div></div>
+                  <div>${pct(res.y[i])}</div>
+                </div>`).join("")}
+            </div>
+          </div>
+        </div>
+        <h3>與輸入圖譜最接近的候選結構（餘弦相似度）</h3>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:0">相似度高不代表該結構一定存在，只表示它的 lectin 指紋接近你的樣本。請與稀疏剖面、示範參考組成一起看。</p>
+        <div class="bars" style="margin-bottom:16px">
+          ${res.candidates.map(p => `
+            <div class="bar-row">
+              <div><b>${p.g.id}</b><br><span style="color:var(--muted)">${p.g.oxford} · ${p.g.cls}</span></div>
+              <div class="track"><div class="fill" style="width:${Math.max(0, p.cos) * 100}%;background:linear-gradient(90deg,#e6b800,#ed1c24)"></div></div>
+              <div>${(p.cos * 100).toFixed(0)}</div>
+            </div>`).join("")}
+        </div>
+        <h3>結構表（含 SNFG 示意與支持此結構的 lectin）</h3>
+        <div class="svgbox">
+          <table>
+            <thead><tr><th>示意</th><th>ID</th><th>Oxford</th><th>類別</th><th>豐度</th><th>主要支持 lectin</th></tr></thead>
+            <tbody>
+              ${res.support.map(p => `<tr>
+                <td style="width:220px">${drawGlycan(p.g)}</td>
+                <td class="mono">${p.g.id}</td>
+                <td>${p.g.oxford}</td>
+                <td>${p.g.cls}</td>
+                <td>${pct(p.ab)}</td>
+                <td>${p.contrib.slice(0, 3).map(c => c.id + " " + c.v.toFixed(3)).join("、")}</td>
+              </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+        ${truth ? `<p class="note" style="margin-top:12px">示範參考組成（文獻／教科書典型值，非模型輸出）：${Object.entries(truth).map(([k, v]) => k + " " + pct(v)).join("；")}。</p>` : ""}
+      `;
+      window.__lastProfile = res;
+    }
+
+    function run(truth) {
+      const signal = collectInputs();
+      renderResult(reconstruct(signal), truth);
+    }
+
+    function init() {
+      const sel = document.getElementById("lectinSelect");
+      sel.innerHTML = LECTINS.map(L => `<option value="${L.id}">${L.id} — ${L.name}</option>`).join("");
+      document.getElementById("lectinCards").innerHTML = LECTINS.map(L => `
+        <div class="lectin-card" data-id="${L.id}">
+          <b>${L.id}</b><span>${L.epitopes[0]}</span>
+        </div>`).join("");
+      document.getElementById("lectinCards").addEventListener("click", e => {
+        const card = e.target.closest(".lectin-card");
+        if (card) renderLectin(card.dataset.id);
+      });
+      sel.addEventListener("change", () => renderLectin(sel.value));
+      document.getElementById("inputGrid").innerHTML = LECTINS.map(L => `
+        <div class="in">
+          <label>${L.id} 訊號</label>
+          <input id="in-${L.id}" type="number" step="any" min="0" placeholder="強度">
+          <label style="margin-top:4px">背景（選填）</label>
+          <input id="bg-${L.id}" type="number" step="any" min="0" placeholder="0">
+        </div>`).join("");
+      const exSel = document.getElementById("exampleSelect");
+      exSel.innerHTML += EXAMPLES.map(e => `<option value="${e.id}">${e.title}</option>`).join("");
+      document.getElementById("exampleCards").innerHTML = EXAMPLES.map(e => `
+        <div class="step">
+          <h4>${e.title}</h4>
+          <p>${e.blurb}</p>
+          <button class="btn" style="margin-top:10px" data-ex="${e.id}" type="button">載入並重建</button>
+        </div>`).join("");
+      document.getElementById("exampleCards").addEventListener("click", e => {
+        const btn = e.target.closest("button[data-ex]");
+        if (!btn) return;
+        loadExample(btn.dataset.ex);
+      });
+      exSel.addEventListener("change", () => { if (exSel.value) loadExample(exSel.value); });
+      document.getElementById("runBtn").addEventListener("click", () => run());
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        LECTINS.forEach(L => { document.getElementById("in-" + L.id).value = ""; document.getElementById("bg-" + L.id).value = ""; });
+        document.getElementById("pasteBox").value = "";
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("exampleSelect").value = "";
+      });
+      document.getElementById("csvBtn").addEventListener("click", () => {
+        const res = window.__lastProfile;
+        if (!res || !res.profile) return;
+        const csv = "glycan,oxford,class,abundance\n" + res.profile.map(p => `${p.g.id},${p.g.oxford},${p.g.cls},${p.ab}`).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "glycan-profile.csv";
+        a.click();
+      });
+      renderLectin("LCA");
+      loadExample("igg", false);
+    }
+
+    function loadExample(id, scroll) {
+      const ex = EXAMPLES.find(x => x.id === id);
+      const sig = simulateFromTruth(ex.truth);
+      setInputs(sig, ex.assay);
+      document.getElementById("exampleSelect").value = id;
+      run(ex.truth);
+      if (scroll !== false) document.getElementById("app").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    init();
+  </script>
+</body>
+</html>
