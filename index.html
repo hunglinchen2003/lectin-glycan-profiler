@@ -72,6 +72,12 @@
       color: var(--navy); padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 700;
     }
     nav.toc a:hover { border-color: var(--glcnac); }
+    nav.site { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+    nav.site a {
+      text-decoration: none; border: 1px solid var(--line); background: #fff;
+      color: var(--navy); padding: 8px 14px; border-radius: 12px; font-size: 14px; font-weight: 800;
+    }
+    nav.site a.on { background: var(--navy); color: #fff; border-color: var(--navy); }
     main { padding: 28px 20px 80px; }
     section { margin: 0 0 28px; }
     .card {
@@ -164,6 +170,10 @@
 <body>
   <header class="hero">
     <div class="wrap">
+      <nav class="site">
+        <a class="on" href="index.html">N-Glycan 剖面</a>
+        <a href="glycan-age.html">IgG Glycan Age</a>
+      </nav>
       <div class="kicker">
         <span class="sq" style="background:var(--glcnac)"></span>GlcNAc
         <span class="dot" style="border-radius:50%;background:var(--man)"></span>Man
@@ -184,6 +194,7 @@
         <a href="#lectins">Lectin 與醣結構</a>
         <a href="#app">輸入資料並重建剖面</a>
         <a href="#examples">示範樣本</a>
+        <a href="glycan-age.html">IgG 醣齡預測</a>
       </nav>
     </div>
   </header>
@@ -237,7 +248,7 @@
       </div>
       <h3>驗證蛋白質（本頁示範也使用這兩種）</h3>
       <ul>
-        <li><strong>人類血清 IgG</strong>：以核心岩藻糖化雙分枝為主（G0F / G1F / G2F），少量 bisecting 與 α2,6-唾液酸化。LCA 高、MAL-I 低、PHA-L 低。</li>
+        <li><strong>人類血清 IgG</strong>：以核心岩藻糖化雙分枝為主（G0F / G1F / G2F），少量 bisecting 與 α2,6-唾液酸化。LCA 高、MAL-I 低、PHA-L 低。同一套 IgG lectin ELISA 也可用來估計 <a href="glycan-age.html">Glycan Age（醣齡）</a>。</li>
         <li><strong>牛 Fetuin B</strong>：高度唾液酸化的三／四分枝複雜型，幾乎無核心 Fuc。MAL-I、SNA、PHA-L 高，LCA 低。模型無法分辨三唾液酸化與 polysialic acid（SNA / MAL-I 都不辨 α2,8）。</li>
       </ul>
       <p>

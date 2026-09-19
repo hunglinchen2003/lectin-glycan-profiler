@@ -16,6 +16,22 @@
 2. 依論文步驟說明資料庫如何建立：309 張 geCHO UPLC 剖面 → LinearCode 特徵矩陣 → Bojar et al. 結合規則 → 模擬 lectin profile → ANN / SHAP。
 3. 下拉或點選文獻 Table S1 的 8 種 lectin（DSL, LCA, MAL-I, PHA-E, PHA-L, RCA-I, SNA, WGA），列出對應醣結構與 SNFG 示意。
 4. 輸入實驗數據或載入示範樣本，做可解釋的剖面重建。
+5. 另頁 **[IgG Glycan Age](glycan-age.html)**：用 IgG lectin ELISA 估計醣齡，並附 100 人模擬世代。
+
+## Glycan Age 分頁
+
+依 Krištić et al. 2014（IgG N-glycans 可解釋約 58% 曆齡變異）把老化糖型接到 LeGenD 的 8 種 lectin：
+
+- 年齡↑：G0／FA2B、bisecting → WGA、PHA-E 上升
+- 年齡↓：G2／FA2G2、唾液酸化 → RCA-I、SNA 下降
+
+`glycan-age.html` 提供：
+
+- 自行輸入 IgG ELLA OD<sub>450</sub> 預測醣齡
+- 100 人固定種子模擬 ELISA（含曆齡、性別、吸菸／運動／發炎）
+- 曆齡 vs 醣齡散佈圖與 CSV 下載
+
+這是教學模型，不是商業 GlycanAge 公式。
 
 ## 示範樣本
 

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IgG Glycan Age｜Lectin ELISA 預測醣齡</title>
+  <meta name="description" content="以 IgG lectin ELISA／ELLA 預測 Glycan Age。含 100 人模擬世代與文獻 G0／G2／bisecting／唾液酸化老化模型。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1c2430; --muted: #5b6573; --paper: #f4efe6; --card: #fffdf8;
+      --line: #d9cfc0; --navy: #143a5c; --glcnac: #0054a6; --man: #00a651;
+      --gal: #e6b800; --fuc: #ed1c24; --sia: #a54399;
+      --shadow: 0 14px 40px rgba(20, 40, 60, 0.08);
+      --young: #1f7a4d; --old: #b42318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--ink);
+      background:
+        radial-gradient(900px 420px at 8% -10%, rgba(165, 67, 153, 0.08), transparent 60%),
+        radial-gradient(700px 380px at 100% 0%, rgba(0, 84, 166, 0.07), transparent 55%),
+        var(--paper);
+      font-family: "Noto Sans TC", sans-serif; line-height: 1.65;
+    }
+    a { color: var(--glcnac); }
+    header.hero {
+      padding: 28px 20px 18px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0%, #f7f3ec 100%);
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    nav.site { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+    nav.site a {
+      text-decoration: none; border: 1px solid var(--line); background: #fff;
+      color: var(--navy); padding: 8px 14px; border-radius: 12px; font-size: 14px; font-weight: 800;
+    }
+    nav.site a.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .kicker { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    h1 {
+      font-family: "Source Serif 4", serif; font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.2; margin: 12px 0 8px; color: var(--navy);
+    }
+    .lead { font-size: 17px; max-width: 860px; color: #334155; }
+    nav.toc { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+    nav.toc a {
+      text-decoration: none; background: #fff; border: 1px solid var(--line);
+      color: var(--navy); padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    }
+    main { padding: 28px 20px 80px; }
+    section { margin: 0 0 28px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 22px; box-shadow: var(--shadow);
+    }
+    h2 { font-family: "Source Serif 4", serif; color: var(--navy); margin: 0 0 12px; font-size: 28px; }
+    h3 { margin: 18px 0 8px; color: var(--navy); font-size: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .box { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+    .box .v { font-size: 26px; font-weight: 900; color: var(--navy); }
+    .box .s { font-size: 12px; color: var(--muted); }
+    .note { background: #eef5fb; border: 1px solid #c9dcea; border-radius: 12px; padding: 12px 14px; font-size: 13.5px; color: #234; }
+    .warn { background: #fff6e8; border: 1px solid #edd7a8; border-radius: 12px; padding: 12px 14px; font-size: 13.5px; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin: 10px 0 14px; }
+    label.field { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--muted); }
+    select, input, button { font-family: inherit; font-size: 14px; }
+    select, input[type="number"] {
+      border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #fff; min-width: 140px;
+    }
+    button { border: 0; border-radius: 999px; padding: 9px 14px; font-weight: 800; cursor: pointer; }
+    .btn { background: var(--navy); color: #fff; }
+    .btn.alt { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+    .input-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .in { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #fff; }
+    .in label { display: block; font-size: 11px; font-weight: 800; color: var(--muted); }
+    .in input { width: 100%; border: 0; padding: 4px 0; outline: none; min-width: 0; font-size: 16px; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; white-space: nowrap; }
+    th { font-size: 11px; letter-spacing: 0.04em; color: var(--muted); cursor: pointer; }
+    tr.sel { background: #eaf2fb; }
+    tr.clickable { cursor: pointer; }
+    .young { color: var(--young); font-weight: 800; }
+    .old { color: var(--old); font-weight: 800; }
+    .scroll { max-height: 520px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 14px; }
+    .bars { display: grid; gap: 7px; }
+    .bar-row { display: grid; grid-template-columns: 92px 1fr 52px; gap: 8px; align-items: center; font-size: 12.5px; }
+    .track { height: 12px; background: #efe8dc; border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--glcnac), var(--sia)); }
+    .gauge {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;
+    }
+    .agebig { font-size: 42px; font-weight: 900; line-height: 1; color: var(--navy); }
+    footer { padding: 24px 20px 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+    canvas.plot { width: 100%; height: 340px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+    @media (max-width: 980px) {
+      .grid-3, .grid-4, .split, .input-grid, .gauge { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <nav class="site">
+        <a href="index.html">N-Glycan 剖面</a>
+        <a class="on" href="glycan-age.html">IgG Glycan Age</a>
+      </nav>
+      <div class="kicker">IgG Fc N-glycans · Krištić 2014 · lectin ELLA 類比</div>
+      <h1>Glycan Age：用 IgG lectin profile 讀醣齡</h1>
+      <p class="lead">
+        血清 IgG 的 Fc N-glycan 會隨年齡改變：無半乳糖化（G0／FA2B）上升、雙半乳糖化（G2／FA2G2、FA2BG2）下降、
+        唾液酸化下降、bisecting GlcNAc 上升。Krištić 等人用三個 UPLC 峰組成 GlycanAge，可解釋約 58% 的曆齡變異。
+        本頁把同一生物學接到 LeGenD 的 8 種 lectin ELLA：輸入 IgG lectin 強度即可估計 <strong>醣齡</strong>，並提供 100 人模擬世代。
+      </p>
+      <nav class="toc">
+        <a href="#concept">醣齡概念</a>
+        <a href="#predict">輸入 ELISA 預測</a>
+        <a href="#cohort">100 人模擬世代</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="concept" class="card">
+      <h2>醣齡（Glycan Age）在量什麼</h2>
+      <p>
+        商業與研究上的 GlycanAge 多半用 <strong>純化血清 IgG 的 UPLC N-glycome</strong>，不是直接用細胞 FACS。
+        核心觀察來自 5,117 名歐洲人（Krištić et al., 2014）與後續漢人世代：IgG 糖型既追蹤曆齡，剩餘變異又與血壓、肺功能、血糖等生物年齡指標相關。
+        G0 升高的 IgG 比較容易走促發炎、較高 ADCC 的路徑，因此醣齡也被看成低度慢性發炎的分子時鐘。
+      </p>
+      <div class="grid-3">
+        <div class="box">
+          <b>隨年齡上升</b>
+          <p>FA2、FA2B（G0；文獻 GP6）。末端 GlcNAc 暴露 → <strong>WGA、PHA-E</strong> 訊號趨高，RCA-I 趨低。</p>
+        </div>
+        <div class="box">
+          <b>隨年齡下降</b>
+          <p>FA2G2、FA2BG2（G2；GP14、GP15）與 FA2G2S1/S2。末端 Galβ1,4 與 α2,6-Sia → <strong>RCA-I、SNA</strong> 趨低。</p>
+        </div>
+        <div class="box">
+          <b>性別與生活型態</b>
+          <p>停經前女性半乳糖化通常較高（醣齡偏年輕）；吸菸、肥胖、慢性發炎會把醣齡往上推，運動與相反。</p>
+        </div>
+      </div>
+      <p class="note">
+        文獻 GlycanAge 指數 = 無半乳糖化 GP6 與兩個雙半乳糖化 GP14、GP15 的組合，預測曆齡誤差約 9.7 歲。
+        本頁改用 lectin 代理變數：WGA≈G0、RCA-I≈G2、PHA-E≈bisecting、SNA≈α2,6-唾液酸化，再反推生物醣齡。
+        這是教學模型，不是 Genos／GlycanAge 公司的商用公式，也不是臨床診斷。
+      </p>
+    </section>
+
+    <section id="predict" class="card">
+      <h2>輸入 IgG lectin ELISA（OD<sub>450</sub>）預測醣齡</h2>
+      <div class="controls">
+        <label class="field">性別（影響半乳糖化基準）
+          <select id="sexSel">
+            <option value="F">女</option>
+            <option value="M">男</option>
+          </select>
+        </label>
+        <label class="field">已知曆齡（選填，歲）
+          <input id="chronoIn" type="number" min="18" max="95" placeholder="例如 45" />
+        </label>
+        <button class="btn" id="predBtn" type="button">預測醣齡</button>
+        <button class="btn alt" id="exYoung" type="button">示範：28 歲運動</button>
+        <button class="btn alt" id="exMid" type="button">示範：46 歲典型</button>
+        <button class="btn alt" id="exOld" type="button">示範：67 歲吸菸發炎</button>
+      </div>
+      <p class="warn">請填 IgG 包盤後的 ELLA／ELISA OD<sub>450</sub>（可含背景）。至少需要 RCA-I、WGA、PHA-E、SNA 四種；LCA 用來確認這是 IgG 樣核心岩藻糖圖譜。</p>
+      <div id="ellaGrid" class="input-grid"></div>
+      <div id="predOut"></div>
+    </section>
+
+    <section id="cohort" class="card">
+      <h2>100 人模擬 IgG ELISA 世代</h2>
+      <p>
+        以固定亂數種子產生 100 名 22–78 歲成人。每人先有曆齡、性別與生活型態，再生成「隱藏生物醣齡」與 IgG 糖型，
+        最後用與剖面頁相同的 lectin 結合規則模擬 ELLA OD<sub>450</sub>。點列即可把該列 ELISA 載入上方預測器。
+      </p>
+      <div id="cohortStats" class="grid-4"></div>
+      <div class="split" style="margin-top:14px">
+        <div>
+          <h3>曆齡 vs 預測醣齡</h3>
+          <canvas id="scatter" class="plot" width="640" height="340"></canvas>
+          <p class="s" style="font-size:12px;color:var(--muted)">對角線 = 醣齡等於曆齡。點在線上方表示醣齡較老。來源：本頁模擬世代（種子 2024）。</p>
+        </div>
+        <div>
+          <h3>世代摘要</h3>
+          <div id="cohortNote"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="field">篩選
+          <select id="filterSel">
+            <option value="all">全部 100 人</option>
+            <option value="F">女性</option>
+            <option value="M">男性</option>
+            <option value="older">醣齡偏老（Δ≥8）</option>
+            <option value="younger">醣齡偏年輕（Δ≤−8）</option>
+            <option value="smoke">有吸菸</option>
+          </select>
+        </label>
+        <button class="btn alt" id="csvBtn" type="button">下載 100 人 CSV</button>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th data-k="id">ID</th>
+              <th data-k="sex">性別</th>
+              <th data-k="chrono">曆齡</th>
+              <th data-k="pred">醣齡</th>
+              <th data-k="delta">Δ</th>
+              <th data-k="LCA">LCA</th>
+              <th data-k="RCAI">RCA-I</th>
+              <th data-k="WGA">WGA</th>
+              <th data-k="PHAE">PHA-E</th>
+              <th data-k="SNA">SNA</th>
+              <th data-k="MALI">MAL-I</th>
+              <th data-k="PHAL">PHA-L</th>
+              <th data-k="DSL">DSL</th>
+              <th data-k="flags">生活型態</th>
+            </tr>
+          </thead>
+          <tbody id="cohortBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      教學模擬。GlycanAge 概念：Krištić J et al. <em>J Gerontol A Biol Sci Med Sci</em> 2014；<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4049143/" target="_blank" rel="noopener">PMC4049143</a>。
+      Lectin 面板與結合規則概念：Li et al. LeGenD，<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10996628/" target="_blank" rel="noopener">PMC10996628</a>。
+      非正式 Genos／GlycanAge 產品，亦非臨床檢驗。
+    </div>
+  </footer>
+
+  <script>
+    const LECTINS = [
+      { id: "DSL", weights: { polyLacNAc: 2.6, termGlcNAc: 1.4, termLacNAc: 0.9 } },
+      { id: "LCA", weights: { coreFuc: 2.9, termManA12: 1.7 } },
+      { id: "MAL-I", weights: { sia23: 2.7, sialicAcidAny: 0.3 } },
+      { id: "PHA-E", weights: { bisectGlcNAc: 2.5, biAntennary: 1.5, termGalB14: 0.5 } },
+      { id: "PHA-L", weights: { b16branch: 2.6, tetraAntennary: 2.3, triAntennary: 1.8 } },
+      { id: "RCA-I", weights: { termLacNAc: 2.5, termGalB14: 2.3 } },
+      { id: "SNA", weights: { sia26: 2.9, sialicAcidAny: 0.4 } },
+      { id: "WGA", weights: { termGlcNAc: 2.1, sialicAcidAny: 1.5, biAntennary: 0.8 } }
+    ];
+
+    const GDEFS = {
+      FA2:     { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 2, poly: 0 },
+      FA2B:    { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, bisect: 1, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 3, poly: 0 },
+      FA2G1:   { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 1, poly: 0 },
+      FA2BG1:  { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, bisect: 1, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 2, poly: 0 },
+      FA2G2:   { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, bisect: 0, antenna: 2, b16: 0, termLacNAc: 2, termGal: 2, termGlcNAc: 0, poly: 0 },
+      FA2BG2:  { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 0, bisect: 1, antenna: 2, b16: 0, termLacNAc: 2, termGal: 2, termGlcNAc: 1, poly: 0 },
+      FA2G2S1: { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 1, bisect: 0, antenna: 2, b16: 0, termLacNAc: 1, termGal: 1, termGlcNAc: 0, poly: 0 },
+      FA2G2S2: { coreFuc: 1, termManA12: 0, sia23: 0, sia26: 2, bisect: 0, antenna: 2, b16: 0, termLacNAc: 0, termGal: 0, termGlcNAc: 0, poly: 0 }
+    };
+
+    function feat(g) {
+      return {
+        coreFuc: g.coreFuc, termManA12: g.termManA12, sia23: g.sia23, sia26: g.sia26,
+        bisectGlcNAc: g.bisect, biAntennary: g.antenna === 2 ? 1 : 0,
+        triAntennary: 0, tetraAntennary: 0, b16branch: g.b16,
+        termLacNAc: g.termLacNAc, termGalB14: g.termGal, termGlcNAc: g.termGlcNAc,
+        polyLacNAc: g.poly, sialicAcidAny: g.sia23 + g.sia26
+      };
+    }
+
+    function rawLectin(g) {
+      const f = feat(g);
+      const o = {};
+      LECTINS.forEach(L => {
+        let s = 0;
+        Object.entries(L.weights).forEach(([k, w]) => { s += (f[k] || 0) * w; });
+        o[L.id] = s;
+      });
+      return o;
+    }
+
+    function mixLectin(truth) {
+      const acc = {};
+      LECTINS.forEach(L => { acc[L.id] = 0; });
+      Object.entries(truth).forEach(([id, ab]) => {
+        const raw = rawLectin(GDEFS[id]);
+        LECTINS.forEach(L => { acc[L.id] += ab * raw[L.id]; });
+      });
+      return acc;
+    }
+
+    function clip(x, a, b) { return Math.max(a, Math.min(b, x)); }
+
+    function mulberry32(a) {
+      return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        let t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function randn(rng) {
+      let u = 0, v = 0;
+      while (!u) u = rng();
+      while (!v) v = rng();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+
+    function traitsFromBio(bio, sex) {
+      const t = clip((bio - 20) / 60, 0, 1.15);
+      const fy = sex === "F" && bio < 50 ? 1 : 0;
+      const fm = sex === "F" && bio >= 52 ? 1 : 0;
+      let g0 = 0.13 + 0.27 * t - 0.045 * fy + 0.03 * fm;
+      let g2 = 0.27 - 0.17 * t + 0.05 * fy - 0.03 * fm;
+      let sia = 0.11 - 0.06 * t + 0.015 * fy;
+      let bis = 0.07 + 0.10 * t - 0.01 * fy;
+      let g1 = 1 - g0 - g2 - sia - bis;
+      const s = g0 + g1 + g2 + sia + bis;
+      return { g0: g0 / s, g1: g1 / s, g2: g2 / s, sia: sia / s, bis: bis / s };
+    }
+
+    function traitsToGlycans(tr) {
+      return {
+        FA2: tr.g0 * 0.68,
+        FA2B: tr.g0 * 0.32,
+        FA2G1: tr.g1 * 0.84,
+        FA2BG1: tr.g1 * 0.16,
+        FA2G2: tr.g2 * 0.74,
+        FA2BG2: tr.g2 * 0.26,
+        FA2G2S1: tr.sia * 0.72,
+        FA2G2S2: tr.sia * 0.28
+      };
+    }
+
+    function toOD(mix, rng) {
+      const scale = 0.55;
+      const od = {};
+      LECTINS.forEach(L => {
+        const noise = rng ? 0.035 * randn(rng) : 0;
+        od[L.id] = clip(0.06 + mix[L.id] * scale + noise, 0.05, 2.8);
+      });
+      return od;
+    }
+
+    function bgSub(od) {
+      const out = {};
+      LECTINS.forEach(L => { out[L.id] = Math.max(0.001, (od[L.id] || 0) - 0.05); });
+      return out;
+    }
+
+    function frac(od) {
+      const x = bgSub(od);
+      const s = Object.values(x).reduce((a, b) => a + b, 0) || 1;
+      const y = {};
+      Object.keys(x).forEach(k => { y[k] = x[k] / s; });
+      return y;
+    }
+
+    function inferTraits(od) {
+      const y = frac(od);
+      const rca = y["RCA-I"], wga = y["WGA"], sna = y["SNA"], phae = y["PHA-E"];
+      const gal = rca / (rca + wga + 0.02);
+      let g0 = clip(0.08 + 0.55 * (1 - gal), 0.05, 0.48);
+      let g2 = clip(0.04 + 0.42 * gal, 0.04, 0.40);
+      let sia = clip(sna * 1.15, 0.02, 0.22);
+      let bis = clip(0.03 + phae * 0.95, 0.03, 0.25);
+      let g1 = 1 - g0 - g2 - sia - bis;
+      if (g1 < 0.08) {
+        const extra = 0.08 - g1;
+        g0 = Math.max(0.05, g0 - extra / 2);
+        g2 = Math.max(0.04, g2 - extra / 2);
+        g1 = 1 - g0 - g2 - sia - bis;
+      }
+      const s = g0 + g1 + g2 + sia + bis;
+      return { g0: g0 / s, g1: g1 / s, g2: g2 / s, sia: sia / s, bis: bis / s };
+    }
+
+    function glycanAgeFromTraits(tr, sex) {
+      const t0 = (tr.g0 - 0.13) / 0.27;
+      const t2 = (0.27 - tr.g2) / 0.17;
+      const tb = (tr.bis - 0.07) / 0.10;
+      const ts = (0.11 - tr.sia) / 0.06;
+      let t = 0.38 * t0 + 0.32 * t2 + 0.18 * tb + 0.12 * ts;
+      if (sex === "F") t += 0.02;
+      return clip(20 + 60 * t, 18, 92);
+    }
+
+    let CAL = { a: 0, b: 1 };
+
+    function fitLine(xs, ys) {
+      const mx = mean(xs), my = mean(ys);
+      let num = 0, den = 0;
+      for (let i = 0; i < xs.length; i++) {
+        num += (xs[i] - mx) * (ys[i] - my);
+        den += (xs[i] - mx) * (xs[i] - mx);
+      }
+      const b = num / (den || 1);
+      return { a: my - b * mx, b };
+    }
+
+    function predictFromOD(od, sex) {
+      const tr = inferTraits(od);
+      const y = frac(od);
+      const raw = glycanAgeFromTraits(tr, sex);
+      const age = clip(CAL.a + CAL.b * raw, 18, 92);
+      return { age, tr, y, raw };
+    }
+
+    function interpret(delta) {
+      if (delta <= -8) return { cls: "young", t: "醣齡明顯較年輕", d: "半乳糖化／唾液酸化偏高，促發炎 G0 糖型較少。" };
+      if (delta >= 8) return { cls: "old", t: "醣齡明顯較老", d: "G0 與 bisecting 偏高，接近低度慢性發炎的 IgG 糖型。" };
+      return { cls: "", t: "與曆齡大致相符", d: "Δ 在 ±8 歲內，接近文獻 GlycanAge 的典型殘差範圍。" };
+    }
+
+    function generateCohort() {
+      const rng = mulberry32(2024);
+      const people = [];
+      for (let i = 0; i < 100; i++) {
+        const sex = rng() < 0.52 ? "F" : "M";
+        const chrono = Math.round(22 + Math.pow(rng(), 0.85) * 56);
+        const smoke = rng() < 0.17;
+        const exercise = rng() < 0.34;
+        const inflam = rng() < 0.11;
+        let d = randn(rng) * 5.2;
+        if (smoke) d += 6.5;
+        if (exercise) d -= 4.2;
+        if (inflam) d += 7.5;
+        if (sex === "F" && chrono < 48) d -= 2.8;
+        if (sex === "F" && chrono > 52) d += 2.4;
+        const bio = clip(chrono + d, 18, 90);
+        const tr = traitsFromBio(bio, sex);
+        const truth = traitsToGlycans(tr);
+        const od = toOD(mixLectin(truth), rng);
+        people.push({
+          id: "P" + String(i + 1).padStart(3, "0"),
+          sex, chrono, bio, smoke, exercise, inflam, tr, od,
+          pred: 0, delta: 0
+        });
+      }
+      const xs = people.map(p => glycanAgeFromTraits(inferTraits(p.od), p.sex));
+      CAL = fitLine(xs, people.map(p => p.bio));
+      people.forEach((p, i) => {
+        p.pred = clip(CAL.a + CAL.b * xs[i], 18, 92);
+        p.delta = p.pred - p.chrono;
+      });
+      return people;
+    }
+
+    const PANEL = ["LCA", "RCA-I", "WGA", "PHA-E", "SNA", "MAL-I", "PHA-L", "DSL"];
+    let COHORT = [];
+    let sortKey = "id";
+    let sortDir = 1;
+    let selectedId = null;
+
+    function setOD(od) {
+      PANEL.forEach(id => {
+        document.getElementById("od-" + id).value = od[id] != null ? od[id].toFixed(3) : "";
+      });
+    }
+
+    function collectOD() {
+      const od = {};
+      PANEL.forEach(id => {
+        const v = Number(document.getElementById("od-" + id).value);
+        if (Number.isFinite(v) && String(document.getElementById("od-" + id).value).trim() !== "") od[id] = v;
+      });
+      return od;
+    }
+
+    function renderPred(od, sex, chrono, person) {
+      const need = ["RCA-I", "WGA", "PHA-E", "SNA"];
+      if (need.some(k => !(k in od))) {
+        document.getElementById("predOut").innerHTML = `<p class="warn" style="margin-top:14px">請至少填 RCA-I、WGA、PHA-E、SNA。</p>`;
+        return;
+      }
+      const r = predictFromOD(od, sex);
+      const delta = chrono ? r.age - chrono : null;
+      const inter = chrono ? interpret(delta) : { cls: "", t: "未提供曆齡", d: "醣齡是 IgG 糖型換算的生物年齡估計，沒有曆齡就無法計算 Δ。" };
+      const lcaOk = (r.y["LCA"] || 0) > 0.12;
+      document.getElementById("predOut").innerHTML = `
+        <div class="gauge">
+          <div class="box">
+            <div class="s">預測醣齡</div>
+            <div class="agebig">${r.age.toFixed(1)}<span style="font-size:18px"> 歲</span></div>
+            ${chrono ? `<div class="s">曆齡 ${chrono} 歲 · Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(1)} 歲</div>` : `<div class="s">未填曆齡</div>`}
+            <p class="${inter.cls}" style="margin:8px 0 0">${inter.t}</p>
+            <p style="margin:4px 0 0;font-size:13px;color:var(--muted)">${inter.d}</p>
+          </div>
+          <div class="box">
+            <div class="s">由 lectin 推得的 IgG 糖型組成</div>
+            <div class="bars" style="margin-top:8px">
+              ${[
+                ["G0（FA2/FA2B）", r.tr.g0, "WGA / 低 RCA"],
+                ["G1（FA2G1）", r.tr.g1, "中等 RCA"],
+                ["G2（FA2G2/FA2BG2）", r.tr.g2, "高 RCA"],
+                ["唾液酸化", r.tr.sia, "SNA"],
+                ["Bisecting", r.tr.bis, "PHA-E"]
+              ].map(([n, v]) => `
+                <div class="bar-row"><div>${n}</div>
+                <div class="track"><div class="fill" style="width:${v * 100}%"></div></div>
+                <div>${(v * 100).toFixed(1)}%</div></div>`).join("")}
+            </div>
+            <p style="font-size:12px;color:${lcaOk ? "var(--young)" : "var(--old)"};margin:8px 0 0">
+              ${lcaOk ? "LCA 高：符合核心岩藻糖化 IgG。" : "LCA 偏低：比較不像典型血清 IgG Fc 糖型，醣齡解讀需謹慎。"}
+            </p>
+            ${person ? `<p style="font-size:12px;color:var(--muted);margin:8px 0 0">目前載入 ${person.id}（${person.sex === "F" ? "女" : "男"}，模擬隱藏生物齡 ${person.bio.toFixed(1)} 歲）。</p>` : ""}
+          </div>
+        </div>
+        <h3>正規化 lectin 向量</h3>
+        <div class="bars">
+          ${PANEL.map(id => `
+            <div class="bar-row"><div>${id}</div>
+            <div class="track"><div class="fill" style="width:${(r.y[id] || 0) / Math.max(...PANEL.map(k => r.y[k] || 0)) * 100}%"></div></div>
+            <div>${((r.y[id] || 0) * 100).toFixed(1)}%</div></div>`).join("")}
+        </div>`;
+    }
+
+    function pearson(xs, ys) {
+      const n = xs.length, mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+      let num = 0, dx = 0, dy = 0;
+      for (let i = 0; i < n; i++) {
+        const a = xs[i] - mx, b = ys[i] - my;
+        num += a * b; dx += a * a; dy += b * b;
+      }
+      return num / (Math.sqrt(dx * dy) || 1);
+    }
+
+    function rmse(xs, ys) {
+      return Math.sqrt(xs.reduce((s, x, i) => s + (x - ys[i]) ** 2, 0) / xs.length);
+    }
+
+    function mean(a) { return a.reduce((x, y) => x + y, 0) / a.length; }
+
+    function drawScatter(people) {
+      const c = document.getElementById("scatter");
+      const ctx = c.getContext("2d");
+      const w = c.width, h = c.height;
+      ctx.clearRect(0, 0, w, h);
+      const pad = 42, x0 = pad, y0 = h - 28, x1 = w - 12, y1 = 12;
+      const lo = 18, hi = 90;
+      const X = v => x0 + (v - lo) / (hi - lo) * (x1 - x0);
+      const Y = v => y0 - (v - lo) / (hi - lo) * (y0 - y1);
+      ctx.strokeStyle = "#d9cfc0"; ctx.beginPath();
+      ctx.moveTo(x0, y0); ctx.lineTo(x1, y0); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.stroke();
+      ctx.strokeStyle = "#c9dcea"; ctx.setLineDash([5, 5]);
+      ctx.beginPath(); ctx.moveTo(X(lo), Y(lo)); ctx.lineTo(X(hi), Y(hi)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#5b6573"; ctx.font = "11px sans-serif";
+      ctx.fillText("曆齡（歲）", w / 2 - 24, h - 8);
+      ctx.save(); ctx.translate(12, h / 2 + 30); ctx.rotate(-Math.PI / 2); ctx.fillText("預測醣齡（歲）", 0, 0); ctx.restore();
+      people.forEach(p => {
+        ctx.fillStyle = p.sex === "F" ? "#a54399" : "#0054a6";
+        ctx.beginPath(); ctx.arc(X(p.chrono), Y(p.pred), selectedId === p.id ? 5.5 : 3.4, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.fillStyle = "#a54399"; ctx.fillRect(x0 + 8, y1 + 6, 8, 8);
+      ctx.fillStyle = "#0054a6"; ctx.fillRect(x0 + 70, y1 + 6, 8, 8);
+      ctx.fillStyle = "#5b6573";
+      ctx.fillText("女", x0 + 20, y1 + 14);
+      ctx.fillText("男", x0 + 82, y1 + 14);
+    }
+
+    function filtered() {
+      const f = document.getElementById("filterSel").value;
+      return COHORT.filter(p => {
+        if (f === "F") return p.sex === "F";
+        if (f === "M") return p.sex === "M";
+        if (f === "older") return p.delta >= 8;
+        if (f === "younger") return p.delta <= -8;
+        if (f === "smoke") return p.smoke;
+        return true;
+      });
+    }
+
+    function odKey(k) {
+      return ({ LCA: "LCA", RCAI: "RCA-I", WGA: "WGA", PHAE: "PHA-E", SNA: "SNA", MALI: "MAL-I", PHAL: "PHA-L", DSL: "DSL" })[k];
+    }
+
+    function valOf(p, k) {
+      const ok = odKey(k);
+      if (ok) return p.od[ok];
+      return p[k];
+    }
+
+    function renderTable() {
+      const rows = filtered().slice().sort((a, b) => {
+        const ka = valOf(a, sortKey), kb = valOf(b, sortKey);
+        if (typeof ka === "string") return sortDir * String(ka).localeCompare(String(kb));
+        return sortDir * ((Number(ka) || 0) - (Number(kb) || 0));
+      });
+      document.getElementById("cohortBody").innerHTML = rows.map(p => {
+        const dcls = p.delta >= 8 ? "old" : p.delta <= -8 ? "young" : "";
+        const flags = [p.smoke ? "吸菸" : "", p.exercise ? "運動" : "", p.inflam ? "發炎" : ""].filter(Boolean).join("、") || "—";
+        return `<tr class="clickable${selectedId === p.id ? " sel" : ""}" data-id="${p.id}">
+          <td>${p.id}</td><td>${p.sex === "F" ? "女" : "男"}</td>
+          <td>${p.chrono}</td><td>${p.pred.toFixed(1)}</td>
+          <td class="${dcls}">${p.delta >= 0 ? "+" : ""}${p.delta.toFixed(1)}</td>
+          <td>${p.od.LCA.toFixed(2)}</td><td>${p.od["RCA-I"].toFixed(2)}</td>
+          <td>${p.od.WGA.toFixed(2)}</td><td>${p.od["PHA-E"].toFixed(2)}</td>
+          <td>${p.od.SNA.toFixed(2)}</td><td>${p.od["MAL-I"].toFixed(2)}</td>
+          <td>${p.od["PHA-L"].toFixed(2)}</td><td>${p.od.DSL.toFixed(2)}</td>
+          <td>${flags}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderStats() {
+      const xs = COHORT.map(p => p.chrono), ys = COHORT.map(p => p.pred);
+      const r = pearson(xs, ys), e = rmse(xs, ys), md = mean(COHORT.map(p => p.delta));
+      const older = COHORT.filter(p => p.delta >= 8).length;
+      const younger = COHORT.filter(p => p.delta <= -8).length;
+      document.getElementById("cohortStats").innerHTML = `
+        <div class="box"><div class="s">人數</div><div class="v">100</div></div>
+        <div class="box"><div class="s">醣齡 vs 曆齡 r</div><div class="v">${r.toFixed(2)}</div></div>
+        <div class="box"><div class="s">對曆齡 RMSE</div><div class="v">${e.toFixed(1)}<span style="font-size:14px"> 歲</span></div></div>
+        <div class="box"><div class="s">偏老 / 偏年輕</div><div class="v">${older} / ${younger}</div></div>`;
+      document.getElementById("cohortNote").innerHTML = `
+        <p class="note">平均 Δ（醣齡−曆齡）= ${md >= 0 ? "+" : ""}${md.toFixed(1)} 歲。文獻 UPLC GlycanAge 對曆齡誤差約 9.7 歲；本模擬 lectin 模型 RMSE ${e.toFixed(1)} 歲，數量級相近是因為隱藏生物齡本來就與曆齡不同。</p>
+        <p>點在散佈圖對角線<strong>上方</strong>的人，IgG 糖型比實際歲數更「老」：常見於吸菸或發炎列。停經前女性與規律運動者較常落在線下方。</p>
+        <p>ELISA 欄位為扣背景前的模擬 OD<sub>450</sub>。IgG 幾乎都是核心岩藻糖，故 LCA 全體偏高；MAL-I 與 PHA-L 維持低值，因為血清 IgG 很少 α2,3-Sia 或三／四分枝。</p>`;
+    }
+
+    function loadPerson(id) {
+      const p = COHORT.find(x => x.id === id);
+      if (!p) return;
+      selectedId = id;
+      document.getElementById("sexSel").value = p.sex;
+      document.getElementById("chronoIn").value = p.chrono;
+      setOD(p.od);
+      renderPred(p.od, p.sex, p.chrono, p);
+      renderTable();
+      drawScatter(COHORT);
+      document.getElementById("predict").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function loadDemo(kind, scroll) {
+      const rng = mulberry32(kind === "young" ? 11 : kind === "mid" ? 22 : 33);
+      const spec = {
+        young: { sex: "F", chrono: 28, bio: 23, smoke: false, exercise: true, inflam: false },
+        mid: { sex: "M", chrono: 46, bio: 47, smoke: false, exercise: false, inflam: false },
+        old: { sex: "M", chrono: 67, bio: 78, smoke: true, exercise: false, inflam: true }
+      }[kind];
+      const od = toOD(mixLectin(traitsToGlycans(traitsFromBio(spec.bio, spec.sex))), rng);
+      document.getElementById("sexSel").value = spec.sex;
+      document.getElementById("chronoIn").value = spec.chrono;
+      setOD(od);
+      selectedId = null;
+      renderTable();
+      renderPred(od, spec.sex, spec.chrono);
+      if (scroll !== false) document.getElementById("predict").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function init() {
+      document.getElementById("ellaGrid").innerHTML = PANEL.map(id => `
+        <div class="in">
+          <label>${id} OD<sub>450</sub></label>
+          <input id="od-${id}" type="number" step="0.001" min="0" placeholder="強度">
+        </div>`).join("");
+      COHORT = generateCohort();
+      document.getElementById("predBtn").onclick = () => {
+        const od = collectOD();
+        const sex = document.getElementById("sexSel").value;
+        const ch = Number(document.getElementById("chronoIn").value);
+        renderPred(od, sex, Number.isFinite(ch) && ch > 0 ? ch : null);
+      };
+      document.getElementById("exYoung").onclick = () => loadDemo("young");
+      document.getElementById("exMid").onclick = () => loadDemo("mid");
+      document.getElementById("exOld").onclick = () => loadDemo("old");
+      document.getElementById("filterSel").onchange = renderTable;
+      document.getElementById("cohortBody").addEventListener("click", e => {
+        const tr = e.target.closest("tr[data-id]");
+        if (tr) loadPerson(tr.dataset.id);
+      });
+      document.querySelectorAll("th[data-k]").forEach(th => {
+        th.onclick = () => {
+          const k = th.dataset.k;
+          sortDir = sortKey === k ? -sortDir : 1;
+          sortKey = k;
+          renderTable();
+        };
+      });
+      document.getElementById("csvBtn").onclick = () => {
+        const head = "id,sex,chrono_age,glycan_age,delta,bio_age_hidden,smoke,exercise,inflammation,LCA,RCA-I,WGA,PHA-E,SNA,MAL-I,PHA-L,DSL";
+        const lines = COHORT.map(p => [p.id, p.sex, p.chrono, p.pred.toFixed(2), p.delta.toFixed(2), p.bio.toFixed(2),
+          p.smoke ? 1 : 0, p.exercise ? 1 : 0, p.inflam ? 1 : 0,
+          p.od.LCA, p.od["RCA-I"], p.od.WGA, p.od["PHA-E"], p.od.SNA, p.od["MAL-I"], p.od["PHA-L"], p.od.DSL
+        ].map(v => typeof v === "number" ? v.toFixed(3) : v).join(","));
+        const blob = new Blob([head + "\n" + lines.join("\n")], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = "igg-glycan-age-cohort.csv"; a.click();
+      };
+      renderStats();
+      renderTable();
+      drawScatter(COHORT);
+      loadDemo("mid", false);
+    }
+    init();
+  </script>
+</body>
+</html>
