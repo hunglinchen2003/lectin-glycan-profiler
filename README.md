@@ -6,7 +6,9 @@
 
 > Li H, Peralta AG, Schoffelen S, et al. **LeGenD: determining N-glycoprofiles using an explainable AI-leveraged model with lectin profiling.** *bioRxiv* (2024). [PMC10996628](https://pmc.ncbi.nlm.nih.gov/articles/PMC10996628/)
 
-線上使用：[https://hunglinchen2003.github.io/lectin-glycan-profiler/](https://hunglinchen2003.github.io/lectin-glycan-profiler/)
+線上使用（中文）：[https://hunglinchen2003.github.io/lectin-glycan-profiler/](https://hunglinchen2003.github.io/lectin-glycan-profiler/)
+
+English：[https://hunglinchen2003.github.io/lectin-glycan-profiler/en/](https://hunglinchen2003.github.io/lectin-glycan-profiler/en/) · [Glycan Age](https://hunglinchen2003.github.io/lectin-glycan-profiler/en/glycan-age.html)
 
 原始碼：[https://github.com/hunglinchen2003/lectin-glycan-profiler](https://github.com/hunglinchen2003/lectin-glycan-profiler)
 
@@ -16,7 +18,7 @@
 2. 依論文步驟說明資料庫如何建立：309 張 geCHO UPLC 剖面 → LinearCode 特徵矩陣 → Bojar et al. 結合規則 → 模擬 lectin profile → ANN / SHAP。
 3. 下拉或點選文獻 Table S1 的 8 種 lectin（DSL, LCA, MAL-I, PHA-E, PHA-L, RCA-I, SNA, WGA），列出對應醣結構與 SNFG 示意。
 4. 輸入實驗數據或載入示範樣本，做可解釋的剖面重建。
-5. 另頁 **[IgG Glycan Age](glycan-age.html)**：用 IgG lectin ELISA 估計醣齡，並附 100 人模擬世代。
+5. 另頁 **[IgG Glycan Age](glycan-age.html)**：用 IgG lectin ELISA 估計醣齡，並附 100 人模擬世代。頁面右上可切換 **中文 / English**。
 
 ## Glycan Age 分頁
 
@@ -47,7 +49,7 @@
 
 ## 本地開啟
 
-用瀏覽器直接打開 `index.html`，或：
+用瀏覽器直接打開 `index.html`（中文）或 `en/index.html`（English），或：
 
 ```bash
 python -m http.server 8080

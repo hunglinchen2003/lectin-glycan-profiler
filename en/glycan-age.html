@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>IgG Glycan Age｜Lectin ELISA 預測醣齡</title>
-  <meta name="description" content="以 IgG lectin ELISA／ELLA 預測 Glycan Age。含 100 人模擬世代與文獻 G0／G2／bisecting／唾液酸化老化模型。" />
+  <title>IgG Glycan Age | Predict glycan age from lectin ELISA</title>
+  <meta name="description" content="Predict Glycan Age from IgG lectin ELISA/ELLA. Includes a 100-person simulated cohort based on published G0/G2/bisecting/sialylation aging trends." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700;900&family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #1c2430; --muted: #5b6573; --paper: #f4efe6; --card: #fffdf8;
@@ -24,7 +24,7 @@
         radial-gradient(900px 420px at 8% -10%, rgba(165, 67, 153, 0.08), transparent 60%),
         radial-gradient(700px 380px at 100% 0%, rgba(0, 84, 166, 0.07), transparent 55%),
         var(--paper);
-      font-family: "Noto Sans TC", sans-serif; line-height: 1.65;
+      font-family: "Source Sans 3", sans-serif; line-height: 1.65;
     }
     a { color: var(--glcnac); }
     header.hero {
@@ -109,115 +109,108 @@
   <header class="hero">
     <div class="wrap">
       <nav class="site">
-        <a href="index.html">N-Glycan 剖面</a>
+        <a href="index.html">N-glycan profile</a>
         <a class="on" href="glycan-age.html">IgG Glycan Age</a>
-        <span class="lang"><a class="on" href="glycan-age.html">中文</a><a href="en/glycan-age.html">English</a></span>
+        <span class="lang"><a href="../glycan-age.html">中文</a><a class="on" href="glycan-age.html">English</a></span>
       </nav>
-      <div class="kicker">IgG Fc N-glycans · Krištić 2014 · lectin ELLA 類比</div>
-      <h1>Glycan Age：用 IgG lectin profile 讀醣齡</h1>
+      <div class="kicker">IgG Fc N-glycans · Krištić 2014 · lectin ELLA analogue</div>
+      <h1>Glycan Age: read biological age from an IgG lectin profile</h1>
       <p class="lead">
-        血清 IgG 的 Fc N-glycan 會隨年齡改變：無半乳糖化（G0／FA2B）上升、雙半乳糖化（G2／FA2G2、FA2BG2）下降、
-        唾液酸化下降、bisecting GlcNAc 上升。Krištić 等人用三個 UPLC 峰組成 GlycanAge，可解釋約 58% 的曆齡變異。
-        本頁把同一生物學接到 LeGenD 的 8 種 lectin ELLA：輸入 IgG lectin 強度即可估計 <strong>醣齡</strong>，並提供 100 人模擬世代。
+        Serum IgG Fc N-glycans change with age: agalactosylated G0/FA2B rises, digalactosylated G2/FA2G2 and FA2BG2 fall, sialylation falls, and bisecting GlcNAc rises. Krištić et al. combined three UPLC peaks into GlycanAge, explaining about 58% of chronological-age variance. This page maps the same biology onto LeGenD's eight-lectin ELLA: enter IgG lectin intensities to estimate <strong>glycan age</strong>, with a 100-person simulated cohort.
       </p>
       <nav class="toc">
-        <a href="#concept">醣齡概念</a>
-        <a href="#predict">輸入 ELISA 預測</a>
-        <a href="#cohort">100 人模擬世代</a>
+        <a href="#concept">Concept</a>
+        <a href="#predict">Predict from ELISA</a>
+        <a href="#cohort">100-person simulated cohort</a>
       </nav>
     </div>
   </header>
 
   <main class="wrap">
     <section id="concept" class="card">
-      <h2>醣齡（Glycan Age）在量什麼</h2>
+      <h2>What Glycan Age measures</h2>
       <p>
-        商業與研究上的 GlycanAge 多半用 <strong>純化血清 IgG 的 UPLC N-glycome</strong>，不是直接用細胞 FACS。
-        核心觀察來自 5,117 名歐洲人（Krištić et al., 2014）與後續漢人世代：IgG 糖型既追蹤曆齡，剩餘變異又與血壓、肺功能、血糖等生物年齡指標相關。
-        G0 升高的 IgG 比較容易走促發炎、較高 ADCC 的路徑，因此醣齡也被看成低度慢性發炎的分子時鐘。
+        Research and commercial GlycanAge assays mostly use the <strong>UPLC N-glycome of purified serum IgG</strong>, not cell-surface FACS. The core observation comes from 5,117 Europeans (Krištić et al., 2014) and later Han Chinese cohorts: IgG glycoforms track chronological age, and residual variance correlates with biological-age traits such as blood pressure, lung function, and glucose. G0-rich IgG is more pro-inflammatory and has higher ADCC, so glycan age is also read as a molecular clock of low-grade chronic inflammation.
       </p>
       <div class="grid-3">
         <div class="box">
-          <b>隨年齡上升</b>
-          <p>FA2、FA2B（G0；文獻 GP6）。末端 GlcNAc 暴露 → <strong>WGA、PHA-E</strong> 訊號趨高，RCA-I 趨低。</p>
+          <b>Increases with age</b>
+          <p>FA2 and FA2B (G0; GP6 in the paper). Terminal GlcNAc is exposed → <strong>WGA and PHA-E</strong> tend to rise and RCA-I falls.</p>
         </div>
         <div class="box">
-          <b>隨年齡下降</b>
-          <p>FA2G2、FA2BG2（G2；GP14、GP15）與 FA2G2S1/S2。末端 Galβ1,4 與 α2,6-Sia → <strong>RCA-I、SNA</strong> 趨低。</p>
+          <b>Decreases with age</b>
+          <p>FA2G2 and FA2BG2 (G2; GP14, GP15) plus FA2G2S1/S2. Terminal Galβ1,4 and α2,6-Sia → <strong>RCA-I and SNA</strong> tend to fall.</p>
         </div>
         <div class="box">
-          <b>性別與生活型態</b>
-          <p>停經前女性半乳糖化通常較高（醣齡偏年輕）；吸菸、肥胖、慢性發炎會把醣齡往上推，運動與相反。</p>
+          <b>Sex and lifestyle</b>
+          <p>Premenopausal women usually have higher galactosylation (younger glycan age). Smoking, obesity, and chronic inflammation push glycan age up; exercise does the opposite.</p>
         </div>
       </div>
       <p class="note">
-        文獻 GlycanAge 指數 = 無半乳糖化 GP6 與兩個雙半乳糖化 GP14、GP15 的組合，預測曆齡誤差約 9.7 歲。
-        本頁改用 lectin 代理變數：WGA≈G0、RCA-I≈G2、PHA-E≈bisecting、SNA≈α2,6-唾液酸化，再反推生物醣齡。
-        這是教學模型，不是 Genos／GlycanAge 公司的商用公式，也不是臨床診斷。
+        The published GlycanAge index combines agalactosylated GP6 with digalactosylated GP14 and GP15, with about 9.7 years error versus chronological age. This page uses lectin proxies instead: WGA≈G0, RCA-I≈G2, PHA-E≈bisecting, SNA≈α2,6-sialylation, then inverts to a biological glycan age. It is a teaching model, not the Genos/GlycanAge commercial formula, and not a clinical test.
       </p>
     </section>
 
     <section id="predict" class="card">
-      <h2>輸入 IgG lectin ELISA（OD<sub>450</sub>）預測醣齡</h2>
+      <h2>Enter IgG lectin ELISA (OD<sub>450</sub>) to predict glycan age</h2>
       <div class="controls">
-        <label class="field">性別（影響半乳糖化基準）
+        <label class="field">Sex (shifts the galactosylation baseline)
           <select id="sexSel">
-            <option value="F">女</option>
-            <option value="M">男</option>
+            <option value="F">Female</option>
+            <option value="M">Male</option>
           </select>
         </label>
-        <label class="field">已知曆齡（選填，歲）
-          <input id="chronoIn" type="number" min="18" max="95" placeholder="例如 45" />
+        <label class="field">Known chronological age (optional, years)
+          <input id="chronoIn" type="number" min="18" max="95" placeholder="e.g. 45" />
         </label>
-        <button class="btn" id="predBtn" type="button">預測醣齡</button>
-        <button class="btn alt" id="exYoung" type="button">示範：28 歲運動</button>
-        <button class="btn alt" id="exMid" type="button">示範：46 歲典型</button>
-        <button class="btn alt" id="exOld" type="button">示範：67 歲吸菸發炎</button>
+        <button class="btn" id="predBtn" type="button">Predict glycan age</button>
+        <button class="btn alt" id="exYoung" type="button">Demo: age 28, exercise</button>
+        <button class="btn alt" id="exMid" type="button">Demo: age 46, typical</button>
+        <button class="btn alt" id="exOld" type="button">Demo: age 67, smoking + inflammation</button>
       </div>
-      <p class="warn">請填 IgG 包盤後的 ELLA／ELISA OD<sub>450</sub>（可含背景）。至少需要 RCA-I、WGA、PHA-E、SNA 四種；LCA 用來確認這是 IgG 樣核心岩藻糖圖譜。</p>
+      <p class="warn">Enter ELLA/ELISA OD<sub>450</sub> after coating IgG (background may be included). RCA-I, WGA, PHA-E, and SNA are required; LCA checks that the map looks like core-fucosylated IgG.</p>
       <div id="ellaGrid" class="input-grid"></div>
       <div id="predOut"></div>
     </section>
 
     <section id="cohort" class="card">
-      <h2>100 人模擬 IgG ELISA 世代</h2>
+      <h2>Simulated 100-person IgG ELISA cohort</h2>
       <p>
-        以固定亂數種子產生 100 名 22–78 歲成人。每人先有曆齡、性別與生活型態，再生成「隱藏生物醣齡」與 IgG 糖型，
-        最後用與剖面頁相同的 lectin 結合規則模擬 ELLA OD<sub>450</sub>。點列即可把該列 ELISA 載入上方預測器。
+        A fixed random seed creates 100 adults aged 22–78. Each person has chronological age, sex, and lifestyle, then a hidden biological glycan age and IgG glycoform mix. ELLA OD<sub>450</sub> is simulated with the same lectin-binding rules as the profiler. Click a row to load that ELISA into the predictor above.
       </p>
       <div id="cohortStats" class="grid-4"></div>
       <div class="split" style="margin-top:14px">
         <div>
-          <h3>曆齡 vs 預測醣齡</h3>
+          <h3>Chronological age vs predicted glycan age</h3>
           <canvas id="scatter" class="plot" width="640" height="340"></canvas>
-          <p class="s" style="font-size:12px;color:var(--muted)">對角線 = 醣齡等於曆齡。點在線上方表示醣齡較老。來源：本頁模擬世代（種子 2024）。</p>
+          <p class="s" style="font-size:12px;color:var(--muted)">The diagonal is glycan age = chronological age. Points above the line have an older glycan age. Source: this simulated cohort (seed 2024).</p>
         </div>
         <div>
-          <h3>世代摘要</h3>
+          <h3>Cohort summary</h3>
           <div id="cohortNote"></div>
         </div>
       </div>
       <div class="controls">
-        <label class="field">篩選
+        <label class="field">Filter
           <select id="filterSel">
-            <option value="all">全部 100 人</option>
-            <option value="F">女性</option>
-            <option value="M">男性</option>
-            <option value="older">醣齡偏老（Δ≥8）</option>
-            <option value="younger">醣齡偏年輕（Δ≤−8）</option>
-            <option value="smoke">有吸菸</option>
+            <option value="all">All 100 people</option>
+            <option value="F">Female</option>
+            <option value="M">Male</option>
+            <option value="older">Older glycan age (Δ≥8)</option>
+            <option value="younger">Younger glycan age (Δ≤−8)</option>
+            <option value="smoke">Smokers</option>
           </select>
         </label>
-        <button class="btn alt" id="csvBtn" type="button">下載 100 人 CSV</button>
+        <button class="btn alt" id="csvBtn" type="button">Download 100-person CSV</button>
       </div>
       <div class="scroll">
         <table>
           <thead>
             <tr>
               <th data-k="id">ID</th>
-              <th data-k="sex">性別</th>
-              <th data-k="chrono">曆齡</th>
-              <th data-k="pred">醣齡</th>
+              <th data-k="sex">Sex</th>
+              <th data-k="chrono">Chrono</th>
+              <th data-k="pred">Glycan age</th>
               <th data-k="delta">Δ</th>
               <th data-k="LCA">LCA</th>
               <th data-k="RCAI">RCA-I</th>
@@ -227,7 +220,7 @@
               <th data-k="MALI">MAL-I</th>
               <th data-k="PHAL">PHA-L</th>
               <th data-k="DSL">DSL</th>
-              <th data-k="flags">生活型態</th>
+              <th data-k="flags">Lifestyle</th>
             </tr>
           </thead>
           <tbody id="cohortBody"></tbody>
@@ -238,9 +231,7 @@
 
   <footer>
     <div class="wrap">
-      教學模擬。GlycanAge 概念：Krištić J et al. <em>J Gerontol A Biol Sci Med Sci</em> 2014；<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4049143/" target="_blank" rel="noopener">PMC4049143</a>。
-      Lectin 面板與結合規則概念：Li et al. LeGenD，<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10996628/" target="_blank" rel="noopener">PMC10996628</a>。
-      非正式 Genos／GlycanAge 產品，亦非臨床檢驗。
+      Teaching simulation. GlycanAge concept: Krištić J et al. <em>J Gerontol A Biol Sci Med Sci</em> 2014; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4049143/" target="_blank" rel="noopener">PMC4049143</a>. Lectin panel and binding-rule concept: Li et al. LeGenD, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10996628/" target="_blank" rel="noopener">PMC10996628</a>. Not a Genos/GlycanAge product and not a clinical assay.
     </div>
   </footer>
 
@@ -417,9 +408,9 @@
     }
 
     function interpret(delta) {
-      if (delta <= -8) return { cls: "young", t: "醣齡明顯較年輕", d: "半乳糖化／唾液酸化偏高，促發炎 G0 糖型較少。" };
-      if (delta >= 8) return { cls: "old", t: "醣齡明顯較老", d: "G0 與 bisecting 偏高，接近低度慢性發炎的 IgG 糖型。" };
-      return { cls: "", t: "與曆齡大致相符", d: "Δ 在 ±8 歲內，接近文獻 GlycanAge 的典型殘差範圍。" };
+      if (delta <= -8) return { cls: "young", t: "Clearly younger glycan age", d: "Higher galactosylation/sialylation and fewer pro-inflammatory G0 glycoforms." };
+      if (delta >= 8) return { cls: "old", t: "Clearly older glycan age", d: "Higher G0 and bisecting glycans, closer to a low-grade inflammatory IgG profile." };
+      return { cls: "", t: "Roughly matches chronological age", d: "Δ is within ±8 years, near the typical residual range of published GlycanAge." };
     }
 
     function generateCohort() {
@@ -480,30 +471,30 @@
     function renderPred(od, sex, chrono, person) {
       const need = ["RCA-I", "WGA", "PHA-E", "SNA"];
       if (need.some(k => !(k in od))) {
-        document.getElementById("predOut").innerHTML = `<p class="warn" style="margin-top:14px">請至少填 RCA-I、WGA、PHA-E、SNA。</p>`;
+        document.getElementById("predOut").innerHTML = `<p class="warn" style="margin-top:14px">Please enter at least RCA-I, WGA, PHA-E, and SNA.</p>`;
         return;
       }
       const r = predictFromOD(od, sex);
       const delta = chrono ? r.age - chrono : null;
-      const inter = chrono ? interpret(delta) : { cls: "", t: "未提供曆齡", d: "醣齡是 IgG 糖型換算的生物年齡估計，沒有曆齡就無法計算 Δ。" };
+      const inter = chrono ? interpret(delta) : { cls: "", t: "No chronological age given", d: "Glycan age is a biological-age estimate from IgG glycoforms; Δ cannot be computed without chronological age." };
       const lcaOk = (r.y["LCA"] || 0) > 0.12;
       document.getElementById("predOut").innerHTML = `
         <div class="gauge">
           <div class="box">
-            <div class="s">預測醣齡</div>
-            <div class="agebig">${r.age.toFixed(1)}<span style="font-size:18px"> 歲</span></div>
-            ${chrono ? `<div class="s">曆齡 ${chrono} 歲 · Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(1)} 歲</div>` : `<div class="s">未填曆齡</div>`}
+            <div class="s">Predicted glycan age</div>
+            <div class="agebig">${r.age.toFixed(1)}<span style="font-size:18px"> yr</span></div>
+            ${chrono ? `<div class="s">Chronological ${chrono} yr · Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(1)} yr</div>` : `<div class="s">No chronological age</div>`}
             <p class="${inter.cls}" style="margin:8px 0 0">${inter.t}</p>
             <p style="margin:4px 0 0;font-size:13px;color:var(--muted)">${inter.d}</p>
           </div>
           <div class="box">
-            <div class="s">由 lectin 推得的 IgG 糖型組成</div>
+            <div class="s">IgG glycoform mix inferred from lectins</div>
             <div class="bars" style="margin-top:8px">
               ${[
-                ["G0（FA2/FA2B）", r.tr.g0, "WGA / 低 RCA"],
-                ["G1（FA2G1）", r.tr.g1, "中等 RCA"],
-                ["G2（FA2G2/FA2BG2）", r.tr.g2, "高 RCA"],
-                ["唾液酸化", r.tr.sia, "SNA"],
+                ["G0 (FA2/FA2B)", r.tr.g0, "WGA / low RCA"],
+                ["G1 (FA2G1)", r.tr.g1, "medium RCA"],
+                ["G2 (FA2G2/FA2BG2)", r.tr.g2, "high RCA"],
+                ["Sialylation", r.tr.sia, "SNA"],
                 ["Bisecting", r.tr.bis, "PHA-E"]
               ].map(([n, v]) => `
                 <div class="bar-row"><div>${n}</div>
@@ -511,12 +502,12 @@
                 <div>${(v * 100).toFixed(1)}%</div></div>`).join("")}
             </div>
             <p style="font-size:12px;color:${lcaOk ? "var(--young)" : "var(--old)"};margin:8px 0 0">
-              ${lcaOk ? "LCA 高：符合核心岩藻糖化 IgG。" : "LCA 偏低：比較不像典型血清 IgG Fc 糖型，醣齡解讀需謹慎。"}
+              ${lcaOk ? "High LCA: consistent with core-fucosylated IgG." : "Low LCA: less like typical serum IgG Fc glycoforms; interpret glycan age cautiously."}
             </p>
-            ${person ? `<p style="font-size:12px;color:var(--muted);margin:8px 0 0">目前載入 ${person.id}（${person.sex === "F" ? "女" : "男"}，模擬隱藏生物齡 ${person.bio.toFixed(1)} 歲）。</p>` : ""}
+            ${person ? `<p style="font-size:12px;color:var(--muted);margin:8px 0 0">Loaded ${person.id} (${person.sex === "F" ? "female" : "male"}; simulated hidden biological age ${person.bio.toFixed(1)} yr).</p>` : ""}
           </div>
         </div>
-        <h3>正規化 lectin 向量</h3>
+        <h3>Normalized lectin vector</h3>
         <div class="bars">
           ${PANEL.map(id => `
             <div class="bar-row"><div>${id}</div>
@@ -556,8 +547,8 @@
       ctx.beginPath(); ctx.moveTo(X(lo), Y(lo)); ctx.lineTo(X(hi), Y(hi)); ctx.stroke();
       ctx.setLineDash([]);
       ctx.fillStyle = "#5b6573"; ctx.font = "11px sans-serif";
-      ctx.fillText("曆齡（歲）", w / 2 - 24, h - 8);
-      ctx.save(); ctx.translate(12, h / 2 + 30); ctx.rotate(-Math.PI / 2); ctx.fillText("預測醣齡（歲）", 0, 0); ctx.restore();
+      ctx.fillText("Chronological age (yr)", w / 2 - 24, h - 8);
+      ctx.save(); ctx.translate(12, h / 2 + 30); ctx.rotate(-Math.PI / 2); ctx.fillText("Predicted glycan age (yr)", 0, 0); ctx.restore();
       people.forEach(p => {
         ctx.fillStyle = p.sex === "F" ? "#a54399" : "#0054a6";
         ctx.beginPath(); ctx.arc(X(p.chrono), Y(p.pred), selectedId === p.id ? 5.5 : 3.4, 0, Math.PI * 2); ctx.fill();
@@ -565,8 +556,8 @@
       ctx.fillStyle = "#a54399"; ctx.fillRect(x0 + 8, y1 + 6, 8, 8);
       ctx.fillStyle = "#0054a6"; ctx.fillRect(x0 + 70, y1 + 6, 8, 8);
       ctx.fillStyle = "#5b6573";
-      ctx.fillText("女", x0 + 20, y1 + 14);
-      ctx.fillText("男", x0 + 82, y1 + 14);
+      ctx.fillText("F", x0 + 20, y1 + 14);
+      ctx.fillText("M", x0 + 82, y1 + 14);
     }
 
     function filtered() {
@@ -599,9 +590,9 @@
       });
       document.getElementById("cohortBody").innerHTML = rows.map(p => {
         const dcls = p.delta >= 8 ? "old" : p.delta <= -8 ? "young" : "";
-        const flags = [p.smoke ? "吸菸" : "", p.exercise ? "運動" : "", p.inflam ? "發炎" : ""].filter(Boolean).join("、") || "—";
+        const flags = [p.smoke ? "smoking" : "", p.exercise ? "exercise" : "", p.inflam ? "inflammation" : ""].filter(Boolean).join(", ") || "—";
         return `<tr class="clickable${selectedId === p.id ? " sel" : ""}" data-id="${p.id}">
-          <td>${p.id}</td><td>${p.sex === "F" ? "女" : "男"}</td>
+          <td>${p.id}</td><td>${p.sex === "F" ? "F" : "M"}</td>
           <td>${p.chrono}</td><td>${p.pred.toFixed(1)}</td>
           <td class="${dcls}">${p.delta >= 0 ? "+" : ""}${p.delta.toFixed(1)}</td>
           <td>${p.od.LCA.toFixed(2)}</td><td>${p.od["RCA-I"].toFixed(2)}</td>
@@ -619,14 +610,14 @@
       const older = COHORT.filter(p => p.delta >= 8).length;
       const younger = COHORT.filter(p => p.delta <= -8).length;
       document.getElementById("cohortStats").innerHTML = `
-        <div class="box"><div class="s">人數</div><div class="v">100</div></div>
-        <div class="box"><div class="s">醣齡 vs 曆齡 r</div><div class="v">${r.toFixed(2)}</div></div>
-        <div class="box"><div class="s">對曆齡 RMSE</div><div class="v">${e.toFixed(1)}<span style="font-size:14px"> 歲</span></div></div>
-        <div class="box"><div class="s">偏老 / 偏年輕</div><div class="v">${older} / ${younger}</div></div>`;
+        <div class="box"><div class="s">N</div><div class="v">100</div></div>
+        <div class="box"><div class="s">Glycan vs chrono r</div><div class="v">${r.toFixed(2)}</div></div>
+        <div class="box"><div class="s">RMSE vs chronological age</div><div class="v">${e.toFixed(1)}<span style="font-size:14px"> yr</span></div></div>
+        <div class="box"><div class="s">Older / younger</div><div class="v">${older} / ${younger}</div></div>`;
       document.getElementById("cohortNote").innerHTML = `
-        <p class="note">平均 Δ（醣齡−曆齡）= ${md >= 0 ? "+" : ""}${md.toFixed(1)} 歲。文獻 UPLC GlycanAge 對曆齡誤差約 9.7 歲；本模擬 lectin 模型 RMSE ${e.toFixed(1)} 歲，數量級相近是因為隱藏生物齡本來就與曆齡不同。</p>
-        <p>點在散佈圖對角線<strong>上方</strong>的人，IgG 糖型比實際歲數更「老」：常見於吸菸或發炎列。停經前女性與規律運動者較常落在線下方。</p>
-        <p>ELISA 欄位為扣背景前的模擬 OD<sub>450</sub>。IgG 幾乎都是核心岩藻糖，故 LCA 全體偏高；MAL-I 與 PHA-L 維持低值，因為血清 IgG 很少 α2,3-Sia 或三／四分枝。</p>`;
+        <p class="note">Mean Δ (glycan − chronological) = ${md >= 0 ? "+" : ""}${md.toFixed(1)} yr. Published UPLC GlycanAge error versus chronological age is about 9.7 yr; this simulated lectin model RMSE is ${e.toFixed(1)} yr, a similar order of magnitude because hidden biological age already differs from chronological age.</p>
+        <p>People <strong>above</strong> the diagonal have IgG glycoforms older than their years: common in smoking or inflammation rows. Premenopausal women and regular exercisers more often fall below the line.</p>
+        <p>ELISA columns are simulated OD<sub>450</sub> before background subtraction. IgG is almost all core-fucosylated, so LCA is high across the cohort; MAL-I and PHA-L stay low because serum IgG has little α2,3-Sia or tri-/tetra-antennary branching.</p>`;
     }
 
     function loadPerson(id) {
@@ -663,7 +654,7 @@
       document.getElementById("ellaGrid").innerHTML = PANEL.map(id => `
         <div class="in">
           <label>${id} OD<sub>450</sub></label>
-          <input id="od-${id}" type="number" step="0.001" min="0" placeholder="強度">
+          <input id="od-${id}" type="number" step="0.001" min="0" placeholder="intensity">
         </div>`).join("");
       COHORT = generateCohort();
       document.getElementById("predBtn").onclick = () => {
